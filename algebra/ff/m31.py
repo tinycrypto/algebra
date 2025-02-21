@@ -17,8 +17,10 @@ class M31:
     if isinstance(x, M31):
       self.value = x.value
     elif isinstance(x, Tensor):
+      # Already a Tensor, so just reduce modulo.
       self.value = mod31(x)
     elif isinstance(x, int):
+      # Reduce using Python big integers, then wrap in NumPy.
       x = x % modulus
       x = np.array(x, dtype=np.uint32)
       self.value = mod31(Tensor(x, requires_grad=False))
@@ -30,6 +32,7 @@ class M31:
       x = np.array([xx % modulus for xx in x], dtype=np.uint32)
       self.value = mod31(Tensor(x, requires_grad=False))
     else:
+      # Fallback: convert to NumPy array.
       x = np.array(x, dtype=np.uint32)
       self.value = mod31(Tensor(x, requires_grad=False))
 
@@ -41,7 +44,13 @@ class M31:
   __radd__ = __add__
 
   def __neg__(self):
-    return M31(mod31(modulus - self.value))
+    """
+    Negates the value in the M31 field.
+    Returns the negation of the current M31 instance.
+    """
+    # Compute the negation using modulus
+    negated_value = (modulus - self.value.numpy()) % modulus  # Ensure the result is within the field
+    return M31(negated_value)
 
   def __sub__(self, other):
     if isinstance(other, int):
@@ -107,7 +116,7 @@ def t32(x) -> Tensor:
 
 def mod31(x: Tensor) -> Tensor:
   """
-  x mod (2^31 - 1), done in float64.
+  x mod (2^31 - 1)
   """
   return x % modulus
 
