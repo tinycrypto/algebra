@@ -21,5 +21,6 @@ def test_pow_2_is_correct():
   a = 3
   order = 12
   result = M31(a ** (2**order))
-  expected_result = M31(a) ** M31(4096)
+  print(result)
+  expected_result = M31(a) ** 4096
   assert result == expected_result

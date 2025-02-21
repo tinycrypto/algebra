@@ -3,6 +3,8 @@
 import numpy as np
 from tinygrad.tensor import Tensor
 
+from algebra.ff.bigint import bigints_to_tensor
+
 modulus = 2**31 - 1  # M31
 
 
@@ -12,13 +14,24 @@ class M31:
   """
 
   def __init__(self, x):
-    if isinstance(x, (int, float)):
-      x = array(x)
-    elif isinstance(x, M31):
-      x = x.value
-    elif not isinstance(x, Tensor):
-      x = array(x)
-    self.value = mod31(x)
+      if isinstance(x, M31):
+          self.value = x.value
+      elif isinstance(x, Tensor):
+          self.value = mod31(x)
+      elif isinstance(x, int):
+          x = x % modulus
+          x = np.array(x, dtype=np.uint32)
+          self.value = mod31(Tensor(x, requires_grad=False))
+      elif isinstance(x, float):
+          x = int(x % modulus)
+          x = np.array(x, dtype=np.uint32)
+          self.value = mod31(Tensor(x, requires_grad=False))
+      elif isinstance(x, list):
+          x = np.array([xx % modulus for xx in x], dtype=np.uint32)
+          self.value = mod31(Tensor(x, requires_grad=False))
+      else:
+          x = np.array(x, dtype=np.uint32)
+          self.value = mod31(Tensor(x, requires_grad=False))
 
   def __add__(self, other):
     if isinstance(other, int):
@@ -42,10 +55,14 @@ class M31:
 
   __rmul__ = __mul__
 
-  def __pow__(self, rhs):
+  def __pow__(self, exponent):
     result = M31(1)
-    for _ in range(rhs):
-      result = result * self
+    base = self
+    while exponent:
+        if exponent & 1:
+            result = result * base
+        base = base * base
+        exponent //= 2
     return result
 
   def inv(self):
@@ -78,9 +95,15 @@ def modinv(x: Tensor) -> Tensor:
 
 
 def t32(x) -> Tensor:
-  # ??
-  arr = np.array(x, dtype=np.int64)
-  return Tensor(arr, requires_grad=False)
+    if isinstance(x, Tensor):
+        return x
+    try:
+        arr = np.array(x, dtype=np.int64)
+    except OverflowError:
+        chunks_arr = bigints_to_tensor(x, chunk_bits=32, num_chunks=8)
+        return Tensor(chunks_arr, requires_grad=False)
+    return Tensor(arr, requires_grad=False)
+
 
 
 def mod31(x: Tensor) -> Tensor:
