@@ -26,7 +26,6 @@ jobs:
         with:
           python-version-file: "pyproject.toml"
 
-      # Cache your Python dependencies to speed up installs.
       - name: Cache Python Dependencies
         id: python-cache
         uses: actions/cache@v4
@@ -40,7 +39,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.python-cache.outputs.cache-hit != 'true'
-        run: uv sync
+        run: uv sync --all-extras --dev
 
       - name: Run Ruff Check
         run: uv run ruff check .
