@@ -1,0 +1,26 @@
+[project]
+name = "algebra"
+version = "0.1.0"
+description = "tinygrad based algebra"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Pia", email = "gayeongparkk@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = [
+    "tinygrad>=0.10.2",
+]
+
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+exclude = ["**/.data", "lib"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.uv.workspace]
+members = ["ec", "ff", "poly"]
+
+[dependency-groups]
+dev = ["pytest>=8.3.4", "ruff>=0.9.7"]
