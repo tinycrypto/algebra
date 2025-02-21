@@ -44,12 +44,7 @@ class M31:
   __radd__ = __add__
 
   def __neg__(self):
-    """
-    Negates the value in the M31 field.
-    Returns the negation of the current M31 instance.
-    """
-    # Compute the negation using modulus
-    negated_value = (modulus - self.value.numpy()) % modulus  # Ensure the result is within the field
+    negated_value = (modulus - self.value.numpy()) % modulus
     return M31(negated_value)
 
   def __sub__(self, other):

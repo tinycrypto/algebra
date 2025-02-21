@@ -69,7 +69,12 @@ def test_exponentiation():
 
 def test_inverse():
   a = M31(3)
-  expected_result = M31(1431655765)  # Assuming this is the modular inverse of 3 mod (2^31 - 1)
+  expected_result = M31(1431655765)
   print(a.inv())
   print(expected_result)
   assert a.inv() == expected_result
+
+
+def test_mul_by_inv():
+  x = 3476715743
+  assert (M31(x).inv() * M31(x)) == M31(1)
