@@ -78,3 +78,16 @@ def test_inverse():
 def test_mul_by_inv():
   x = 3476715743
   assert (M31(x).inv() * M31(x)) == M31(1)
+
+
+def test_div_1():
+  assert (M31(2) / M31(1)) == M31(2)
+
+
+def test_div_4_2():
+  assert (M31(4) / M31(2)) == M31(2)
+
+
+def test_div_4_3():
+  expected_result = M31(1431655766)
+  assert (M31(4) / M31(3)) == expected_result

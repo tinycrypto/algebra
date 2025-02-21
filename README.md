@@ -1,6 +1,6 @@
 # tinycrypto/algebra
 
-A tinygrad based algebra implementation of algebra. Influenced by [arkworks-rs/algebra](https://github.com/arkworks-rs/algebra/tree/master).
+A [tinygrad](https://github.com/tinygrad/tinygrad) based algebra implementation of algebra. Influenced by [arkworks-rs/algebra](https://github.com/arkworks-rs/algebra/tree/master).
 
 ## Directory structure
 
