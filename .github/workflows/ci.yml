@@ -26,14 +26,26 @@ jobs:
         with:
           python-version-file: "pyproject.toml"
 
+      # Cache your Python dependencies to speed up installs.
+      - name: Cache Python Dependencies
+        id: python-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: python-dependencies-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            python-dependencies-${{ runner.os }}-
+
       - name: Install Dependencies
         if: steps.python-cache.outputs.cache-hit != 'true'
         run: uv sync
 
-       - name: Run Ruff Check
+      - name: Run Ruff Check
         run: uv run ruff check .
 
-       - name: Run Ruff Format
+      - name: Run Ruff Format
         run: uv run ruff format .
 
       - name: Load Cached Pre-Commit Dependencies
