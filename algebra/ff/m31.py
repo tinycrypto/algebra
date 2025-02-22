@@ -11,7 +11,7 @@ P = (1 << 31) - 1
 
 def mod31_py_obj(inp):
   if isinstance(inp, Tensor):
-    return inp.numpy() % P
+    return inp % P
   elif isinstance(inp, int):
     return inp % P
   elif isinstance(inp, float):
@@ -62,7 +62,7 @@ class M31:
       exponent //= 2
     return result
 
-  def inv(self):
+  def inv(self) -> "M31":
     return M31(modinv(self.value))
 
   def __truediv__(self, other):
@@ -89,7 +89,7 @@ class M31:
     return len(self.value)
 
   def tobytes(self):
-    return (self.value % P).tobytes()
+    return ((self.value % P).numpy()).tobytes()
 
   def __eq__(self, other):
     if isinstance(other, int):
