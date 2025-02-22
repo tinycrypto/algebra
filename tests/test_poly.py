@@ -20,9 +20,9 @@ def test_polynomial_operations_m31():
   assert (p4.coeffs.numpy() == [(-M31(3)).value.numpy(), (-M31(3)).value.numpy(), M31(3).value.numpy()]).all()
 
   # MUL
-  # p5 = p1 * p2  # Should be (1 + 2*x + 3*x^2) * (4 + 5*x)
+  p5 = p1 * p2  # Should be (1 + 2*x + 3*x^2) * (4 + 5*x)
   # # 4 + 13*x + 22*x^2 + 15*x^3
-  # assert np.all(p5.coeffs.numpy() == [(M31(4)).value.numpy(), (M31(13)).value.numpy(), M31(22).value.numpy(), M31(15).value.numpy()])
+  assert (p5.coeffs.numpy() == [(M31(4)).value.numpy(), (M31(13)).value.numpy(), M31(22).value.numpy(), M31(15).value.numpy()]).all()
 
   # Test evaluation
   result = p1.evaluate(2).numpy()  # Evaluate p1 at x = 2
@@ -46,9 +46,10 @@ def test_polynomial_operations_babybear():
   assert (p4.coeffs.numpy() == [(-BabyBear(3)).value.numpy(), (-BabyBear(3)).value.numpy(), BabyBear(3).value.numpy()]).all()
 
   # MUL
-  # p5 = p1 * p2  # Should be (1 + 2*x + 3*x^2) * (4 + 5*x)
-  # expected_coeffs = [BabyBear(4), BabyBear(13), BabyBear(22), BabyBear(15)]  # 4 + 13*x + 22*x^2 + 15*x^3
-  # assert p5.coeffs == expected_coeffs
+  p5 = p1 * p2  # Should be (1 + 2*x + 3*x^2) * (4 + 5*x)
+  assert (
+    p5.coeffs.numpy() == [(BabyBear(4)).value.numpy(), (BabyBear(13)).value.numpy(), BabyBear(22).value.numpy(), BabyBear(15).value.numpy()]
+  ).all()
 
   # Test evaluation
   result = p1.evaluate(2).numpy()  # Evaluate p1 at x = 2

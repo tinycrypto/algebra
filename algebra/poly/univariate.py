@@ -75,10 +75,27 @@ class Polynomial:
     """
     Multiply by another polynomial or by a scalar.
     """
-    # If 'other' is a Polynomial, perform polynomial multiplication (convolution)
     if isinstance(other, Polynomial):
-      # TODO: wip
-      return Polynomial(other.coeffs, self.PrimeField)
+      na, nb = self.coeffs.shape[0], other.coeffs.shape[0]
+      result_len = na + nb - 1
+
+      idx = Tensor.arange(result_len, dtype=dtypes.int32).reshape(result_len, 1, 1)
+      ai = Tensor.arange(na, dtype=dtypes.int32).reshape(1, na, 1)
+      bi = Tensor.arange(nb, dtype=dtypes.int32).reshape(1, 1, nb)
+
+      idx_expanded = idx.expand(result_len, na, nb)
+      ai_expanded = ai.expand(result_len, na, nb)
+      bi_expanded = bi.expand(result_len, na, nb)
+
+      mask = ai_expanded + bi_expanded == idx_expanded
+
+      a_exp = self.coeffs.reshape(1, na, 1).expand(result_len, na, nb)
+      b_exp = other.coeffs.reshape(1, 1, nb).expand(result_len, na, nb)
+
+      products = a_exp * b_exp * mask
+      new_coeffs = products.sum(axis=(1, 2)).mod(Tensor([self.PrimeField.P]))
+
+      return Polynomial(new_coeffs, self.PrimeField)
     else:
       new_coeffs = (self.coeffs.mul(Tensor([other]))).mod(Tensor([self.PrimeField.P]))
       return Polynomial(new_coeffs, self.PrimeField)
