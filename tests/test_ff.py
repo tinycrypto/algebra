@@ -1,6 +1,23 @@
 # M31 test
 
+import pytest
 from algebra.ff.m31 import M31
+
+
+def test_basic_ops_m31():
+  import random
+
+  random.seed(0)
+  P = 2147483647  # 2 ** 31 - 1
+  for _ in range(100):
+    x = random.randint(0, 2**31 - 1)
+    y = random.randint(0, 2**31 - 1)
+    assert M31((x + y) % P) == M31(x) + M31(y)
+    assert M31((x * y) % P) == M31(x) * M31(y)
+    if x == 0:
+      assert M31(0) == -M31(x)
+    else:
+      assert M31(P - x) == -M31(x)
 
 
 def test_mul_power_two_is_correct():
@@ -28,38 +45,11 @@ def test_pow_2_is_correct():
   assert result == expected_result
 
 
-def test_addition():
-  a = M31(5)
-  b = M31(10)
-  expected_result = M31(15)
-  assert a + b == expected_result
-
-
-def test_subtraction():
-  a = M31(10)
-  b = M31(5)
-  expected_result = M31(5)
-  assert a - b == expected_result
-
-
-def test_multiplication():
-  a = M31(3)
-  b = M31(4)
-  expected_result = M31(12)
-  assert a * b == expected_result
-
-
 def test_division():
   a = M31(10)
   b = M31(2)
   expected_result = M31(5)
   assert a / b == expected_result
-
-
-def test_negation():
-  a = M31(5)
-  expected_result = M31(2**31 - 6)  # Since M31 is mod 2^31 - 1
-  assert -a == expected_result
 
 
 def test_exponentiation():
@@ -110,9 +100,32 @@ def test_mul_div_2exp_u64():
   # 32 / 2^5 = 1.
   assert M31(32 / 2**5) == M31(1)
 
+
+def test_inverse_zero():
+  a = M31(0)
+  with pytest.raises(AssertionError, match="0 has no inverse"):
+    a.inv()
+
+
 # BabyBear test
 
 from algebra.ff.babybear import BabyBear
+
+
+def test_basic_ops_babybear():
+  import random
+
+  random.seed(0)
+  P = 2013265921  # (1 << 31) - (1 << 27) + 1
+  for _ in range(100):
+    x = random.randint(0, 2**31 - 1)
+    y = random.randint(0, 2**31 - 1)
+    assert BabyBear((x + y) % P) == BabyBear(x) + BabyBear(y)
+    assert BabyBear((x * y) % P) == BabyBear(x) * BabyBear(y)
+    if x == 0:
+      assert BabyBear(0) == -BabyBear(x)
+    else:
+      assert BabyBear(P - x) == -BabyBear(x)
 
 
 def test_mul_power_two_is_correct_babybear():
@@ -139,39 +152,11 @@ def test_pow_2_is_correct_babybear():
   assert result == expected_result
 
 
-def test_addition_babybear():
-  a = BabyBear(5)
-  b = BabyBear(10)
-  expected_result = BabyBear(15)
-  assert a + b == expected_result
-
-
-def test_subtraction_babybear():
-  a = BabyBear(10)
-  b = BabyBear(5)
-  expected_result = BabyBear(5)
-  assert a - b == expected_result
-
-
-def test_multiplication_babybear():
-  a = BabyBear(3)
-  b = BabyBear(4)
-  expected_result = BabyBear(12)
-  assert a * b == expected_result
-
-
 def test_division_babybear():
   a = BabyBear(10)
   b = BabyBear(2)
   expected_result = BabyBear(5)
   assert a / b == expected_result
-
-
-def test_negation_babybear():
-  P = (1 << 31) - (1 << 27) + 1
-  a = BabyBear(5)
-  expected_result = BabyBear(P - 5)
-  assert -a == expected_result
 
 
 def test_exponentiation_babybear():

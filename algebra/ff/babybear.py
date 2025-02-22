@@ -3,7 +3,7 @@ from tinygrad.tensor import Tensor
 from algebra.ff.bigint import bigints_to_tensor
 
 # The babybear prime: 2^31 - 2^27 + 1
-P = (1 << 31) - (1 << 27) + 1  # 2013265921
+P = 2013265921
 
 
 def modbb_py_obj(inp):

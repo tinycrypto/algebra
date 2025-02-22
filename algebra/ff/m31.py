@@ -5,8 +5,8 @@ from tinygrad.tensor import Tensor
 
 from algebra.ff.bigint import bigints_to_tensor
 
-# The Mersenne31 prime
-P = (1 << 31) - 1
+# The Mersenne31 prime (2 ** 31 - 1)
+P = 2147483647
 
 
 def mod31_py_obj(inp):
@@ -30,6 +30,7 @@ class M31:
       x = array(mod31_py_obj(x))
     elif isinstance(x, M31):
       x = x.value
+    print(x)
     assert (x.numpy() >> 31) == 0, "Value exceeds 32-bit unsigned integer range"
     self.value = x
 
@@ -63,6 +64,7 @@ class M31:
     return result
 
   def inv(self) -> "M31":
+    assert not iszero(self.value), "0 has no inverse"
     return M31(modinv(self.value))
 
   def __truediv__(self, other):
