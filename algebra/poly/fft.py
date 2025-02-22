@@ -1,6 +1,6 @@
 from tinygrad import Tensor, dtypes
 import math
-
+import numpy as np
 
 def bit_reverse_indices(n):
   indices = Tensor.arange(n, dtype=dtypes.uint32)
@@ -23,7 +23,10 @@ def precompute_twiddles(N, isign):
   return twiddles
 
 
-def fft(x_real: Tensor, x_imag: Tensor, inverse: bool = False) -> tuple[Tensor, Tensor]:
+def fft(x_real: Tensor, x_imag: Tensor, inverse: bool = False, use_numpy: bool = True) -> tuple[Tensor, Tensor]:
+  if use_numpy:
+    return Tensor(np.fft.fft(x_real + x_imag * 1j))
+
   N = x_real.shape[0]
   assert N == x_imag.shape[0] and (N & (N - 1)) == 0, "N must be a power of 2"
   assert x_real.dtype == dtypes.int32, f"x_real must be i32, got {x_real.dtype}"
