@@ -1,5 +1,5 @@
-import numpy as np
 from tinygrad.tensor import Tensor
+from tinygrad import dtypes
 from algebra.ff.prime_field import PrimeField as PF
 
 
@@ -21,7 +21,7 @@ class Polynomial:
     """
     self.PrimeField = prime_field
     if isinstance(coeffs, list):
-      self.coeffs = Tensor(np.array(coeffs, dtype=np.int32), requires_grad=False)
+      self.coeffs = Tensor(coeffs, dtype=dtypes.int32)
     elif isinstance(coeffs, Tensor):
       self.coeffs = coeffs
 
