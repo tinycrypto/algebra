@@ -107,6 +107,16 @@ def test_inverse_zero():
     a.inv()
 
 
+def test_pow_modulus_m31():
+  import random
+
+  for _ in range(10):
+    rng = random.Random()
+    a = M31(rng.randint(0, M31.P - 1))
+    modulus = M31.P
+    assert a**modulus == a
+
+
 # BabyBear test
 
 from algebra.ff.babybear import BabyBear
@@ -204,3 +214,13 @@ def test_mul_div_2exp_u64_babybear():
   assert BabyBear(2 / 2**0) == BabyBear(2)
   # 32 / 2^5 = 32 / 32 = 1.
   assert BabyBear(32 / 2**5) == BabyBear(1)
+
+
+def test_pow_modulus_babybear():
+  import random
+
+  for _ in range(10):
+    rng = random.Random()
+    a = BabyBear(rng.randint(0, BabyBear.P - 1))
+    modulus = BabyBear.P
+    assert a**modulus == a

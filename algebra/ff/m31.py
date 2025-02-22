@@ -19,9 +19,6 @@ class M31(PrimeField):
 
   @classmethod
   def modinv_impl(cls, x: Tensor) -> Tensor:
-    o = x
-    pow_of_x = cls.mul_mod(x, x)
-    for _ in range(29):
-      pow_of_x = cls.mul_mod(pow_of_x, pow_of_x)
-      o = cls.mul_mod(o, pow_of_x)
-    return o
+    # Compute the modular inverse using Fermat's little theorem:
+    #   x^(P-2) mod P.
+    return cls.pow_tensor(x, cls.P - 2)
