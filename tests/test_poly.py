@@ -1,4 +1,3 @@
-import numpy as np
 from algebra.poly.univariate import Polynomial
 from algebra.ff.m31 import M31
 from algebra.ff.babybear import BabyBear
@@ -14,11 +13,11 @@ def test_polynomial_operations_m31():
 
   # ADD
   p3 = p1 + p2  # Should be 5 + 7*x + 3*x^2
-  assert np.all(p3.coeffs.numpy() == [5, 7, 3])
+  assert (p3.coeffs.numpy() == [5, 7, 3]).all()
 
   # SUB
   p4 = p1 - p2  # Should be -3 - 3*x + 3*x^2
-  assert np.all(p4.coeffs.numpy() == [(-M31(3)).value.numpy(), (-M31(3)).value.numpy(), M31(3).value.numpy()])
+  assert (p4.coeffs.numpy() == [(-M31(3)).value.numpy(), (-M31(3)).value.numpy(), M31(3).value.numpy()]).all()
 
   # MUL
   # p5 = p1 * p2  # Should be (1 + 2*x + 3*x^2) * (4 + 5*x)
@@ -40,11 +39,11 @@ def test_polynomial_operations_babybear():
 
   # ADD
   p3 = p1 + p2  # Should be 5 + 7*x + 3*x^2
-  assert np.all(p3.coeffs.numpy() == [5, 7, 3])
+  assert (p3.coeffs.numpy() == [5, 7, 3]).all()
 
   # SUB
   p4 = p1 - p2  # Should be -3 - 3*x + 3*x^2
-  assert np.all(p4.coeffs.numpy() == [(-BabyBear(3)).value.numpy(), (-BabyBear(3)).value.numpy(), BabyBear(3).value.numpy()])
+  assert (p4.coeffs.numpy() == [(-BabyBear(3)).value.numpy(), (-BabyBear(3)).value.numpy(), BabyBear(3).value.numpy()]).all()
 
   # MUL
   # p5 = p1 * p2  # Should be (1 + 2*x + 3*x^2) * (4 + 5*x)
