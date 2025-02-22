@@ -8,11 +8,12 @@ def test_basic_ops_m31():
   import random
 
   random.seed(0)
-  P = 2147483647  # 2 ** 31 - 1
+  P = M31.P  # 2 ** 31 - 1
   for _ in range(100):
-    x = random.randint(0, 2**31 - 1)
-    y = random.randint(0, 2**31 - 1)
+    x = random.randint(0, P)
+    y = random.randint(0, P)
     assert M31((x + y) % P) == M31(x) + M31(y)
+    assert M31((x + P - y) % P) == M31(x) - M31(y)
     assert M31((x * y) % P) == M31(x) * M31(y)
     if x == 0:
       assert M31(0) == -M31(x)
@@ -126,11 +127,12 @@ def test_basic_ops_babybear():
   import random
 
   random.seed(0)
-  P = 2013265921  # (1 << 31) - (1 << 27) + 1
+  P = BabyBear.P  # (1 << 31) - (1 << 27) + 1
   for _ in range(100):
-    x = random.randint(0, 2**31 - 1)
-    y = random.randint(0, 2**31 - 1)
+    x = random.randint(0, BabyBear.P)
+    y = random.randint(0, BabyBear.P)
     assert BabyBear((x + y) % P) == BabyBear(x) + BabyBear(y)
+    assert BabyBear((x + P - y) % P) == BabyBear(x) - BabyBear(y)
     assert BabyBear((x * y) % P) == BabyBear(x) * BabyBear(y)
     if x == 0:
       assert BabyBear(0) == -BabyBear(x)

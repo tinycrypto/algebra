@@ -3,7 +3,7 @@ from tinygrad import dtypes
 
 
 class PrimeField:
-  P = None
+  P: int = None
 
   def __init__(self, x):
     if isinstance(x, (int, float, list, Tensor)):
@@ -18,7 +18,7 @@ class PrimeField:
     return type(self)(self.add(self.value, other.value))
 
   def __neg__(self):
-    return type(self)(self.P - self.value)
+    return type(self)(self.neg(self.value))
 
   def __sub__(self, other):
     if isinstance(other, int):
@@ -79,11 +79,15 @@ class PrimeField:
   # -- Common arithmetic utility methods --
   @classmethod
   def add(cls, a: Tensor, b: Tensor) -> Tensor:
-    return (a + b) % cls.P
+    return (a + b).mod(Tensor([cls.P]))
 
   @classmethod
   def sub(cls, a: Tensor, b: Tensor) -> Tensor:
-    return (a - b) % cls.P
+    return (a - b).mod(Tensor([cls.P]))
+
+  @classmethod
+  def neg(cls, a: Tensor) -> Tensor:
+    return cls.P - a
 
   @classmethod
   def mul_mod(cls, a: Tensor, b: Tensor) -> Tensor:

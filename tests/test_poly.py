@@ -24,6 +24,10 @@ def test_polynomial_operations_m31():
   # # 4 + 13*x + 22*x^2 + 15*x^3
   assert (p5.coeffs.numpy() == [(M31(4)).value.numpy(), (M31(13)).value.numpy(), M31(22).value.numpy(), M31(15).value.numpy()]).all()
 
+  # NEG
+  p6 = -p1  # Negate p1
+  assert (p6.coeffs.numpy() == [(-M31(1)).value.numpy(), (-M31(2)).value.numpy(), (-M31(3)).value.numpy()]).all()
+
   # Test evaluation
   result = p1.evaluate(2).numpy()  # Evaluate p1 at x = 2
   assert result == (1 + 2 * 2 + 3 * 2**2)  # 1 + 4 + 12 = 17
@@ -50,6 +54,10 @@ def test_polynomial_operations_babybear():
   assert (
     p5.coeffs.numpy() == [(BabyBear(4)).value.numpy(), (BabyBear(13)).value.numpy(), BabyBear(22).value.numpy(), BabyBear(15).value.numpy()]
   ).all()
+
+  # NEG
+  p6 = -p1  # Negate p1
+  assert (p6.coeffs.numpy() == [(-BabyBear(1)).value.numpy(), (-BabyBear(2)).value.numpy(), (-BabyBear(3)).value.numpy()]).all()
 
   # Test evaluation
   result = p1.evaluate(2).numpy()  # Evaluate p1 at x = 2

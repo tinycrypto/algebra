@@ -49,29 +49,30 @@ class Polynomial:
     """
     Add two polynomials.
     """
-    max_len = max(self.coeffs.size(dim=0), other.coeffs.size(dim=0))
-    self_padded = self.coeffs.pad((0, max_len - self.coeffs.size(dim=0)), mode="constant", value=0)
-    other_padded = other.coeffs.pad((0, max_len - other.coeffs.size(dim=0)), mode="constant", value=0)
-    new_coeffs = self_padded + other_padded
+    max_len = max(self.coeffs.shape[0], other.coeffs.shape[0])
+    self_padded = self.coeffs.pad((0, max_len - self.coeffs.shape[0]), mode="constant", value=0)
+    other_padded = other.coeffs.pad((0, max_len - other.coeffs.shape[0]), mode="constant", value=0)
+    new_coeffs = self.PrimeField.add(self_padded, other_padded)
     return Polynomial(new_coeffs, self.PrimeField)
 
   def __sub__(self, other):
     """
     Subtract another polynomial from this polynomial.
     """
-    max_len = max(self.coeffs.size(dim=0), other.coeffs.size(dim=0))
-    self_padded = self.coeffs.pad((0, max_len - self.coeffs.size(dim=0)), mode="constant", value=0)
-    other_padded = other.coeffs.pad((0, max_len - other.coeffs.size(dim=0)), mode="constant", value=0)
-    new_coeffs = (self_padded - other_padded).mod(Tensor([self.PrimeField.P]))
+    max_len = max(self.coeffs.shape[0], other.coeffs.shape[0])
+    self_padded = self.coeffs.pad((0, max_len - self.coeffs.shape[0]), mode="constant", value=0)
+    other_padded = other.coeffs.pad((0, max_len - other.coeffs.shape[0]), mode="constant", value=0)
+    new_coeffs = self.PrimeField.sub(self_padded, other_padded)
     return Polynomial(new_coeffs, self.PrimeField)
 
   def __neg__(self):
     """
     Negate the polynomial.
     """
-    return Polynomial([-c for c in self.coeffs], self.PrimeField)
+    new_coeffs = self.PrimeField.neg(self.coeffs)
+    return Polynomial(new_coeffs, self.PrimeField)
 
-  def __mul__(self, other):
+  def __mul__(self, other: Tensor | int):
     """
     Multiply by another polynomial or by a scalar.
     """
@@ -104,14 +105,5 @@ class Polynomial:
     return self.__mul__(other)
 
   def __repr__(self):
-    if not self.coeffs:
-      return "0"
-    terms = []
-    for i, coeff in enumerate(self.coeffs):
-      if i == 0:
-        terms.append(f"{coeff}")
-      elif i == 1:
-        terms.append(f"({coeff})*x")
-      else:
-        terms.append(f"({coeff})*x^{i}")
-    return " + ".join(terms)
+    coeffs_list = self.coeffs.numpy().tolist()
+    return f"Polynomial({coeffs_list})"
