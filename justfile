@@ -1,4 +1,6 @@
 ci:
+    uv sync
+    
     @echo "Running Ruff checks..."
     uv run ruff check
 
