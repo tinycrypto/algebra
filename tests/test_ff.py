@@ -91,3 +91,19 @@ def test_div_4_2():
 def test_div_4_3():
   expected_result = M31(1431655766)
   assert (M31(4) / M31(3)) == expected_result
+
+
+def test_mul_div_2exp_u64():
+  # 1 * 2^0 = 1.
+  assert M31(1 * 2**0) == M31(1)
+  # 5 * 2^2 = 20.
+  assert M31(5 * 2**2) == M31(20)
+  # 2 * 2^30 = 2^31 = 1.
+  assert M31(2 * 2**30) == M31(1)
+
+  # 1 / 2^0 = 1.
+  assert M31(1 / 2**0) == M31(1)
+  # 2 / 2^0 = 2.
+  assert M31(2 / 2**0) == M31(2)
+  # 32 / 2^5 = 1.
+  assert M31(32 / 2**5) == M31(1)
