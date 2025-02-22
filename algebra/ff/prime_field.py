@@ -1,6 +1,5 @@
 import numpy as np
 from tinygrad.tensor import Tensor
-from algebra.ff.bigint import bigints_to_tensor
 
 
 class PrimeField:
@@ -8,10 +7,9 @@ class PrimeField:
 
   def __init__(self, x):
     if isinstance(x, (int, float, list, Tensor)):
-      x = self.array(self.mod_py_obj(x))
+      x = self.t32(self.mod_py_obj(x))
     elif isinstance(x, PrimeField):
       x = x.value
-    assert (x.numpy() >> 31).max() == 0, "Value exceeds 32-bit unsigned integer range"
     self.value = x
 
   def __add__(self, other):
@@ -99,10 +97,6 @@ class PrimeField:
   def zeros(cls, shape):
     return Tensor.zeros(*shape, dtype=np.float32)
 
-  @classmethod
-  def arange(cls, *args):
-    return cls.t32(np.arange(*args, dtype=np.uint32))
-
   @staticmethod
   def append(*args, axis=0):
     return Tensor.cat(args, dim=axis)
@@ -128,29 +122,29 @@ class PrimeField:
   def zeros_like(x: Tensor):
     return Tensor.zeros(*x.shape, dtype=np.float64)
 
-  @classmethod
-  def array(cls, pyobj):
-    return cls.t32(pyobj)
-
   @staticmethod
   def t32(x) -> Tensor:
     if isinstance(x, Tensor):
       return x
-    try:
-      arr = np.array(x, dtype=np.int64)
-    except OverflowError:
-      chunks_arr = bigints_to_tensor(x, chunk_bits=32, num_chunks=8)
-      return Tensor(chunks_arr, requires_grad=False)
-    return Tensor(arr, requires_grad=False)
+    return Tensor(np.array(x, dtype=np.int32), requires_grad=False)
 
   # -- Unique methods: to be implemented by subclasses --
   @classmethod
   def mod_py_obj(cls, inp):
-    raise NotImplementedError("Subclasses must implement mod_py_obj")
+    if isinstance(inp, Tensor):
+      return inp % cls.P
+    elif isinstance(inp, int):
+      return inp % cls.P
+    elif isinstance(inp, float):
+      return int(inp) % cls.P
+    else:
+      return [cls.mod_py_obj(x) for x in inp]
 
   @classmethod
   def modinv_impl(cls, x: Tensor) -> Tensor:
-    raise NotImplementedError("Subclasses must implement modinv_impl")
+    # Compute the modular inverse using Fermat's little theorem:
+    #   x^(P-2) mod P.
+    return cls.pow_tensor(x, cls.P - 2)
 
   @classmethod
   def pow_tensor(cls, base: Tensor, exponent: int) -> Tensor:
