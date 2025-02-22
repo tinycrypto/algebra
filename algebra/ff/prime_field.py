@@ -1,5 +1,5 @@
-import numpy as np
 from tinygrad.tensor import Tensor
+from tinygrad import dtypes
 
 
 class PrimeField:
@@ -42,7 +42,7 @@ class PrimeField:
     return result
 
   def inv(self):
-    assert not self.iszero(self.value), "0 has no inverse"
+    assert not self.iszero(self.value).numpy(), "0 has no inverse"
     return type(self)(self.modinv_impl(self.value))
 
   def __truediv__(self, other):
@@ -74,16 +74,16 @@ class PrimeField:
   def __eq__(self, other):
     if isinstance(other, int):
       other = type(self)(other)
-    return self.eq_t(self.value, other.value)
+    return self.eq_t(self.value, other.value).numpy()
 
   # -- Common arithmetic utility methods --
   @classmethod
   def add(cls, a: Tensor, b: Tensor) -> Tensor:
-    return a + b
+    return (a + b) % cls.P
 
   @classmethod
   def sub(cls, a: Tensor, b: Tensor) -> Tensor:
-    return a + (cls.P - b)
+    return (a - b) % cls.P
 
   @classmethod
   def mul_mod(cls, a: Tensor, b: Tensor) -> Tensor:
@@ -95,7 +95,7 @@ class PrimeField:
 
   @classmethod
   def zeros(cls, shape):
-    return Tensor.zeros(*shape, dtype=np.float32)
+    return Tensor.zeros(*shape, dtype=dtypes.float32)
 
   @staticmethod
   def append(*args, axis=0):
@@ -103,30 +103,25 @@ class PrimeField:
 
   @classmethod
   def tobytes_tensor(cls, x: Tensor) -> bytes:
-    arr = x.detach().numpy()
-    arr = np.mod(arr, cls.P).astype(np.uint32)
-    return arr.tobytes()
+    return (x % cls.P).numpy().tobytes()
 
   @classmethod
-  def eq_t(cls, x: Tensor, y: Tensor) -> bool:
-    xnp = np.mod(x.detach().numpy(), cls.P)
-    ynp = np.mod(y.detach().numpy(), cls.P)
-    return np.array_equal(xnp, ynp)
+  def eq_t(cls, x: Tensor, y: Tensor):
+    return (x % cls.P == y % cls.P).all()
 
   @classmethod
-  def iszero(cls, x: Tensor) -> bool:
-    arr = np.mod(x.detach().numpy(), cls.P)
-    return np.all(arr == 0)
+  def iszero(cls, x: Tensor):
+    return (x % cls.P == 0).all()
 
   @staticmethod
   def zeros_like(x: Tensor):
-    return Tensor.zeros(*x.shape, dtype=np.float64)
+    return Tensor.zeros(*x.shape, dtype=dtypes.float64)
 
   @staticmethod
   def t32(x) -> Tensor:
     if isinstance(x, Tensor):
       return x
-    return Tensor(np.array(x, dtype=np.int32), requires_grad=False)
+    return Tensor(x, dtype=dtypes.int32)
 
   # -- Unique methods: to be implemented by subclasses --
   @classmethod
