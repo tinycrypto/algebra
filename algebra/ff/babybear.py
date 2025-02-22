@@ -2,9 +2,9 @@ from algebra.ff.prime_field import PrimeField
 from tinygrad.tensor import Tensor
 
 
-class M31(PrimeField):
-  # Mersenne31 prime: 2^31 - 1
-  P = 2147483647
+class BabyBear(PrimeField):
+  # BabyBear prime: 2^31 - 2^27 + 1
+  P = 2013265921
 
   @classmethod
   def mod_py_obj(cls, inp):
