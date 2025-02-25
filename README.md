@@ -1,17 +1,17 @@
-# tinycrypto/algebra
+# tinycrypto
 
-A [tinygrad](https://github.com/tinygrad/tinygrad) based algebra implementation of algebra. Influenced by [arkworks-rs/algebra](https://github.com/arkworks-rs/algebra/tree/master).
+tinycrypto is a collection of cryptographic primitives implemented in [tinygrad](https://github.com/tinygrad/tinygrad). Because certain cryptographic schemes(e.g lattice cryptography, polynomial operations) require quite of an matrix operations, we began experimenting with the idea of leveraging tinygrad’s hyper-optimized `Tensor` data structure. Could this approach lead to a fast yet user-friendly Python cryptography library?
 
-## Directory structure
+## Components
 
-* [`ff`](algebra/ff): Generic abstractions for, and implementations of various kinds of finite fields
-  * - [ ] Mersenne31
-    * - [x] basic
-    * - [ ] extension
-  * - [ ] BabyBear
-    * - [x] basic
-    * - [ ] extension
-* [`ec`](algebra/fec): Generic abstractions for prime-order groups, and implementations of various kinds of (pairing-friendly and standard) elliptic curves
-* [`poly`](algebra/poly): Interfaces for univariate, multivariate, and multilinear polynomials, and FFTs over finite fields
-  * - [X] univariate
-  * - [ ] multivariate
+- **[`ff`](tinycrypto/ff)**: Generic abstractions and implementations of various finite fields:
+  - Mersenne31
+    - [x] Basic
+    - [ ] Extension
+  - BabyBear
+    - [x] Basic
+    - [ ] Extension
+
+- **[`poly`](tinycrypto/poly)**: Interfaces for univariate, multivariate, and multilinear polynomials, as well as FFTs over finite fields:
+  - [x] Univariate
+  - [ ] Multivariate

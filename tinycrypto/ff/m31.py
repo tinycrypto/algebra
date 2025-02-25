@@ -1,4 +1,4 @@
-from algebra.ff.prime_field import PrimeField
+from tinycrypto.ff.prime_field import PrimeField
 
 
 class M31(PrimeField):

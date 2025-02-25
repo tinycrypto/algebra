@@ -2,8 +2,8 @@ from tinygrad import Tensor
 import time
 import numpy as np
 
-from algebra.ff.m31 import M31
-from algebra.poly.univariate import Polynomial
+from tinycrypto.ff.m31 import M31
+from tinycrypto.poly.univariate import Polynomial
 
 
 def poly_mul_loop(a: list[int], b: list[int]) -> list[int]:

@@ -1,10 +1,14 @@
 [project]
-name = "algebra"
+name = "tinycrypto"
 version = "0.1.0"
-description = "tinygrad based algebra"
+description = "tinygrad based cryptography"
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "Pia", email = "gayeongparkk@gmail.com" }]
+authors = [
+    # TODO:
+    { name = "Bargov", email = "gayeongparkk@gmail.com" },
+    { name = "Pia", email = "gayeongparkk@gmail.com" },
+]
 requires-python = ">=3.10"
 dependencies = ["numpy>=2.2.3", "tinygrad>=0.10.2"]
 

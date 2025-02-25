@@ -1,6 +1,6 @@
 from tinygrad.tensor import Tensor
 from tinygrad import dtypes
-from algebra.ff.prime_field import PrimeField as PF
+from tinycrypto.ff.prime_field import PrimeField as PF
 
 
 class Polynomial:

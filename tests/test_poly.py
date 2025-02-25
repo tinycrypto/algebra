@@ -1,6 +1,6 @@
-from algebra.poly.univariate import Polynomial
-from algebra.ff.m31 import M31
-from algebra.ff.babybear import BabyBear
+from tinycrypto.poly.univariate import Polynomial
+from tinycrypto.ff.m31 import M31
+from tinycrypto.ff.babybear import BabyBear
 
 
 def test_polynomial_operations_m31():

@@ -1,7 +1,7 @@
 import time
 import numpy as np
 from tinygrad import Tensor, dtypes
-from algebra.poly.fft import fft
+from tinycrypto.poly.fft import fft
 
 
 def test_fft():
@@ -10,14 +10,14 @@ def test_fft():
   x_imag = Tensor.zeros(N, dtype=dtypes.int32)
 
   start = time.time()
-  fft_real, fft_imag = fft(x_real, x_imag, inverse=False)
+  fft_real, fft_imag = fft(x_real, x_imag, inverse=False, use_numpy=False)
   fft_time = time.time() - start
   print(f"FFT took {fft_time} seconds")
   print("FFT Real:", fft_real.numpy())
   print("FFT Imag:", fft_imag.numpy())
 
   start = time.time()
-  ifft_real, ifft_imag = fft(fft_real, fft_imag, inverse=True)
+  ifft_real, ifft_imag = fft(fft_real, fft_imag, inverse=True, use_numpy=False)
   ifft_time = time.time() - start
   print(f"IFFT took {ifft_time} seconds")
   print("IFFT Real (should match input):", ifft_real.numpy())
