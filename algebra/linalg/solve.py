@@ -4,31 +4,22 @@ import time
 from scipy import linalg  # Import scipy.linalg for built-in LU decomposition
 
 def lu_decomposition(A):
-    """Perform LU decomposition using the Doolittle factorisation with vectorized operations."""
-    
     n = A.shape[0]
-    L = Tensor.zeros((n, n)).contiguous()
-    U = L.clone()
+    L = Tensor.eye(n).contiguous()
+    U = Tensor.zeros((n, n)).contiguous()
     
     for k in range(n):
-        L[k, k] = 1
-        U[k, k] = (A[k, k] - (L[k, :k] @ U[:k, k])) / L[k, k]
-        if k+1 < n:
-            U[k, k+1:] = (A[k, k+1:] - (L[k, :k] @ U[:k, k+1:])) / L[k, k]
-        if k+1 < n:
-            L[k+1:, k] = (A[k+1:, k] - (L[k+1:, :k] @ U[:k, k])) / U[k, k]
-            
+        U[k, k:] = A[k, k:] - L[k, :k] @ U[:k, k:]
+        L[k+1:, k] = (A[k+1:, k] - L[k+1:, :k] @ U[:k, k]) / U[k, k] if k < n-1 else L[k+1:, k]
+        
     return L, U
 
 def lu_decomposition_scipy(A):
-    """Perform LU decomposition using SciPy's built-in function."""
-    A_np = A.numpy() if hasattr(A, 'numpy') else A
-    P, L, U = linalg.lu(A_np)
+    P, L, U = linalg.lu(A)
     
     return L, U
 
-def benchmark(sizes=[10, 50, 100, 200]):
-    """Benchmark tinygrad vs SciPy LU decomposition."""
+def benchmark(sizes=[2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]):
     print("Benchmarking LU decomposition: tinygrad vs SciPy")
     print("-" * 60)
     print(f"{'Size':<10}{'tinygrad (ms)':<20}{'SciPy (ms)':<20}{'Ratio':<10}")
@@ -36,7 +27,7 @@ def benchmark(sizes=[10, 50, 100, 200]):
     
     for n in sizes:
         # Create random matrices
-        A_np = np.random.randint(0, 100, size=(n, n))
+        A_np = np.random.randint(0, 1 << 16, size=(n, n))
         A_tiny = Tensor(A_np)
         
         # Benchmark tinygrad
