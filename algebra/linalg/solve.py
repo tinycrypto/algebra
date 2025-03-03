@@ -1,6 +1,4 @@
 from tinygrad import Tensor
-import numpy as np
-import time
 
 def lu_decomposition(A):
     n = A.shape[0]
