@@ -1,4 +1,4 @@
-# tinycrypto/algebra
+# tinycrypto/algebra [![CI](https://github.com/tinycrypto/algebra/actions/workflows/ci.yml/badge.svg)](https://github.com/tinycrypto/algebra/actions/workflows/ci.yml)
 
 A [tinygrad](https://github.com/tinygrad/tinygrad) based algebra implementation of algebra. Influenced by [arkworks-rs/algebra](https://github.com/arkworks-rs/algebra/tree/master).
 
