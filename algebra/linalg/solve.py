@@ -7,9 +7,9 @@ def lud(A):
   U = Tensor.zeros((n, n), dtype=A.dtype).contiguous()
   for k in range(n):
     U[k, k:] = A[k, k:] - L[k, :k] @ U[:k, k:]
+    if abs(U[k, k].item()) < 1e-10:
+      raise ValueError("Matrix is singular, cannot compute LU decomposition")
     if k < n - 1:
-      if U[k, k].item() == 0:
-        raise ValueError("Matrix is singular, cannot compute LU decomposition")
       L[k + 1 :, k] = (A[k + 1 :, k] - L[k + 1 :, :k] @ U[:k, k]) / U[k, k]
   return L, U
 
