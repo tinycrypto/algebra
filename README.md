@@ -15,3 +15,6 @@ A [tinygrad](https://github.com/tinygrad/tinygrad) based algebra implementation 
 * [`poly`](algebra/poly): Interfaces for univariate, multivariate, and multilinear polynomials, and FFTs over finite fields
   * - [X] univariate
   * - [ ] multivariate
+* [`linalg`](algebra/linalg): Interfaces for linear algebra operations, and implementations of various kinds of linear algebra operations
+  * - [X] matrix inverse
+  * - [X] LU decomposition
