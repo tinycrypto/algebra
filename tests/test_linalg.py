@@ -59,10 +59,10 @@ def test_matrix_inverse_3x3():
 def test_matrix_inverse_singular():
   A = Tensor([[1.0, 2.0], [2.0, 4.0]])
   with pytest.raises(ValueError):
-    A_inv = matrix_inverse(A)
+    matrix_inverse(A)
 
 
 def test_matrix_inverse_non_square():
   A = Tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
   with pytest.raises(ValueError):
-    A_inv = matrix_inverse(A)
+    matrix_inverse(A)
