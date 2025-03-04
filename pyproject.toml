@@ -6,7 +6,11 @@ readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "Pia", email = "gayeongparkk@gmail.com" }]
 requires-python = ">=3.10"
-dependencies = ["numpy>=2.2.3", "tinygrad>=0.10.2"]
+dependencies = [
+    "numpy>=2.2.3",
+    "scipy>=1.15.2",
+ "tinygrad>=0.10.2",
+]
 
 [tool.ruff]
 line-length = 100

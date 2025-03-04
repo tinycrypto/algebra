@@ -2,6 +2,7 @@ from tinygrad import Tensor, dtypes
 import math
 import numpy as np
 
+
 def bit_reverse_indices(n):
   indices = Tensor.arange(n, dtype=dtypes.uint32)
   nbits = int(math.log2(n))
