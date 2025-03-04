@@ -5,12 +5,12 @@ def lud(A):
   n = A.shape[0]
   L = Tensor.eye(n, dtype=A.dtype).contiguous()
   U = Tensor.zeros((n, n), dtype=A.dtype).contiguous()
-
   for k in range(n):
     U[k, k:] = A[k, k:] - L[k, :k] @ U[:k, k:]
     if k < n - 1:
+      if U[k, k].item() == 0:
+        raise ValueError("Matrix is singular, cannot compute LU decomposition")
       L[k + 1 :, k] = (A[k + 1 :, k] - L[k + 1 :, :k] @ U[:k, k]) / U[k, k]
-
   return L, U
 
 
@@ -39,3 +39,14 @@ def itril(L):
       L_inv[i] = (I[i] - L[i, :i] @ L_inv[:i]) / diag[i]
   return L_inv
 
+
+def matrix_inverse(A: Tensor) -> Tensor:
+  if A.shape[0] != A.shape[1]:
+    raise ValueError("Matrix must be square")
+
+  L, U = lud(A)
+  U_inv = itriu(U)
+  L_inv = itril(L)
+  A_inv = U_inv @ L_inv
+
+  return A_inv
