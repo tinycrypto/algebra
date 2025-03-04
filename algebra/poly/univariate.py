@@ -32,18 +32,35 @@ class Polynomial:
     """
     return max(self.coeffs.size(dim=0) - 1, 0)
 
-  def evaluate(self, x: int):
+  def evaluate(self, x: int | Tensor):
     """
     Evaluate the polynomial at the field element x using Horner's method.
 
     x: a field element (instance of the same PrimeField subclass)
     """
+    if isinstance(x, Tensor):
+      return self.__evaluate_all(x)
+
     if self.coeffs.shape[0] == 0:
       return x * 0
     result = self.coeffs[0] * 0
     for coeff in self.coeffs[::-1]:
       result = result * x + coeff
     return result
+  
+  def __evaluate_all(self, xs: Tensor):
+    """
+    Evaluate the polynomial at all elements in xs using Horner's method.
+    """
+    if self.coeffs.shape[0] == 0:
+      return xs * 0
+
+    results = Tensor.zeros(xs.shape[0], dtype=xs.dtype)
+
+    for coeff in self.coeffs[::-1]:
+      results = (results * xs + coeff).mod(Tensor([self.PrimeField.P]))
+
+    return results
 
   def __add__(self, other: "Polynomial"):
     """
@@ -107,3 +124,6 @@ class Polynomial:
   def __repr__(self):
     coeffs_list = self.coeffs.numpy().tolist()
     return f"Polynomial({coeffs_list})"
+  
+  def __call__(self, x: int | Tensor):
+    return self.evaluate(x)

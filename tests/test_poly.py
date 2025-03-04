@@ -1,7 +1,7 @@
 from algebra.poly.univariate import Polynomial
 from algebra.ff.m31 import M31
 from algebra.ff.babybear import BabyBear
-
+from tinygrad import Tensor
 
 def test_polynomial_operations_m31():
   p1 = Polynomial([1, 2, 3], M31)  #  1 + 2*x + 3*x^2
@@ -29,8 +29,11 @@ def test_polynomial_operations_m31():
   assert (p6.coeffs.numpy() == [(-M31(1)).value.numpy(), (-M31(2)).value.numpy(), (-M31(3)).value.numpy()]).all()
 
   # Test evaluation
-  result = p1.evaluate(2).numpy()  # Evaluate p1 at x = 2
+  result = p1(2).numpy()  # Evaluate p1 at x = 2
   assert result == (1 + 2 * 2 + 3 * 2**2)  # 1 + 4 + 12 = 17
+
+  result = p1(Tensor([1, 2, 3])).numpy()
+  assert (result == [6, 17, 34]).all()
 
 
 def test_polynomial_operations_babybear():
@@ -60,5 +63,9 @@ def test_polynomial_operations_babybear():
   assert (p6.coeffs.numpy() == [(-BabyBear(1)).value.numpy(), (-BabyBear(2)).value.numpy(), (-BabyBear(3)).value.numpy()]).all()
 
   # Test evaluation
-  result = p1.evaluate(2).numpy()  # Evaluate p1 at x = 2
+  result = p1(2).numpy()  # Evaluate p1 at x = 2
   assert result == (1 + 2 * 2 + 3 * 2**2)  # 1 + 4 + 12 = 17
+
+  # Test evaluate_all
+  result = p1(Tensor([1, 2, 3])).numpy()
+  assert (result == [6, 17, 34]).all()
