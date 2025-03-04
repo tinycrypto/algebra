@@ -47,7 +47,7 @@ class Polynomial:
     for coeff in self.coeffs[::-1]:
       result = result * x + coeff
     return result
-  
+
   def __evaluate_all(self, xs: Tensor):
     """
     Evaluate the polynomial at all elements in xs using Horner's method.
@@ -124,6 +124,6 @@ class Polynomial:
   def __repr__(self):
     coeffs_list = self.coeffs.numpy().tolist()
     return f"Polynomial({coeffs_list})"
-  
+
   def __call__(self, x: int | Tensor):
     return self.evaluate(x)

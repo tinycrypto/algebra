@@ -3,6 +3,7 @@ from algebra.ff.m31 import M31
 from algebra.ff.babybear import BabyBear
 from tinygrad import Tensor
 
+
 def test_polynomial_operations_m31():
   p1 = Polynomial([1, 2, 3], M31)  #  1 + 2*x + 3*x^2
   p2 = Polynomial([4, 5], M31)  #  4 + 5*x
