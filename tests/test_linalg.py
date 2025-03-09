@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from tinygrad import Tensor
-from algebra.linalg.solve import lud, itriu, itril, matrix_inverse
+from algebra.linalg.solve import lud, itriu, itril, matrix_inverse, solve
 
 
 def test_lud():
@@ -66,3 +66,28 @@ def test_matrix_inverse_non_square():
   A = Tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
   with pytest.raises(ValueError):
     matrix_inverse(A)
+
+
+def test_solve():
+  # Test with a simple 2x2 system
+  A = Tensor([[4.0, 7.0], [2.0, 6.0]])
+  b = Tensor([11.0, 8.0])
+  x = solve(A, b)
+  print(f"x: {x.numpy()}")
+  
+  # Check that A @ x ≈ b
+  result = A @ x
+  assert np.allclose(result.numpy(), b.numpy(), rtol=1e-5)
+  
+  # Check against known solution: x = [1.0, 1.0]
+  expected = np.array([1.0, 1.0])
+  assert np.allclose(x.numpy(), expected, rtol=1e-5)
+  
+  # Test with a 3x3 system
+  A = Tensor([[3.0, 1.0, 2.0], [2.0, 6.0, -1.0], [1.0, 0.0, 4.0]])
+  b = Tensor([10.0, 1.0, 5.0])
+  x = solve(A, b)
+  
+  # Check that A @ x ≈ b
+  result = A @ x
+  assert np.allclose(result.numpy(), b.numpy(), rtol=1e-5)
