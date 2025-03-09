@@ -24,7 +24,7 @@ def precompute_twiddles(N, isign):
   return twiddles
 
 
-def fft(x_real: Tensor, x_imag: Tensor, inverse: bool = False, use_numpy: bool = True) -> tuple[Tensor, Tensor]:
+def _fft(x_real: Tensor, x_imag: Tensor, inverse: bool = False, use_numpy: bool = True) -> tuple[Tensor, Tensor]:
   if use_numpy:
     return Tensor(np.fft.fft(x_real + x_imag * 1j))
 
@@ -68,3 +68,13 @@ def fft(x_real: Tensor, x_imag: Tensor, inverse: bool = False, use_numpy: bool =
   x_real_out = x_real_float.cast(dtypes.int32)
   x_imag_out = x_imag_float.cast(dtypes.int32)
   return x_real_out, x_imag_out
+
+
+def fft(x_real: Tensor, x_imag: Tensor, use_numpy: bool = True) -> tuple[Tensor, Tensor]:
+  return _fft(x_real, x_imag, use_numpy=use_numpy)
+
+
+def ifft(x_real: Tensor, x_imag: Tensor, use_numpy: bool = True) -> tuple[Tensor, Tensor]:
+  return _fft(x_real, x_imag, inverse=True, use_numpy=use_numpy)
+
+
