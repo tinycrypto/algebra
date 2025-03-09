@@ -13,11 +13,12 @@ class Polynomial:
     where each coefficient ai is an instance of a PrimeField element.
     """
 
-  def __init__(self, coeffs: list[int] | Tensor, prime_field: PF):
+  def __init__(self, coeffs: list[int] | Tensor, prime_field: PF = None):
     """
     Initialize the polynomial.
 
     coeffs: a list of field elements (instances of a PrimeField subclass)
+    prime_field: optional prime field class to use for modular arithmetic
     """
     self.PrimeField = prime_field
     if isinstance(coeffs, list):
@@ -58,7 +59,9 @@ class Polynomial:
     results = Tensor.zeros(xs.shape[0], dtype=xs.dtype)
 
     for coeff in self.coeffs[::-1]:
-      results = (results * xs + coeff).mod(Tensor([self.PrimeField.P]))
+      results = results * xs + coeff
+      if self.PrimeField is not None:
+        results = results.mod(Tensor([self.PrimeField.P]))
 
     return results
 
@@ -69,7 +72,12 @@ class Polynomial:
     max_len = max(self.coeffs.shape[0], other.coeffs.shape[0])
     self_padded = self.coeffs.pad((0, max_len - self.coeffs.shape[0]), mode="constant", value=0)
     other_padded = other.coeffs.pad((0, max_len - other.coeffs.shape[0]), mode="constant", value=0)
-    new_coeffs = self.PrimeField.add(self_padded, other_padded)
+    
+    if self.PrimeField is not None:
+      new_coeffs = self.PrimeField.add(self_padded, other_padded)
+    else:
+      new_coeffs = self_padded + other_padded
+      
     return Polynomial(new_coeffs, self.PrimeField)
 
   def __sub__(self, other):
@@ -79,14 +87,23 @@ class Polynomial:
     max_len = max(self.coeffs.shape[0], other.coeffs.shape[0])
     self_padded = self.coeffs.pad((0, max_len - self.coeffs.shape[0]), mode="constant", value=0)
     other_padded = other.coeffs.pad((0, max_len - other.coeffs.shape[0]), mode="constant", value=0)
-    new_coeffs = self.PrimeField.sub(self_padded, other_padded)
+    
+    if self.PrimeField is not None:
+      new_coeffs = self.PrimeField.sub(self_padded, other_padded)
+    else:
+      new_coeffs = self_padded - other_padded
+      
     return Polynomial(new_coeffs, self.PrimeField)
 
   def __neg__(self):
     """
     Negate the polynomial.
     """
-    new_coeffs = self.PrimeField.neg(self.coeffs)
+    if self.PrimeField is not None:
+      new_coeffs = self.PrimeField.neg(self.coeffs)
+    else:
+      new_coeffs = -self.coeffs
+      
     return Polynomial(new_coeffs, self.PrimeField)
 
   def __mul__(self, other: Tensor | int):
@@ -111,11 +128,17 @@ class Polynomial:
       b_exp = other.coeffs.reshape(1, 1, nb).expand(result_len, na, nb)
 
       products = a_exp * b_exp * mask
-      new_coeffs = products.sum(axis=(1, 2)).mod(Tensor([self.PrimeField.P]))
+      new_coeffs = products.sum(axis=(1, 2))
+      
+      if self.PrimeField is not None:
+        new_coeffs = new_coeffs.mod(Tensor([self.PrimeField.P]))
 
       return Polynomial(new_coeffs, self.PrimeField)
     else:
-      new_coeffs = (self.coeffs.mul(Tensor([other]))).mod(Tensor([self.PrimeField.P]))
+      if self.PrimeField is not None:
+        new_coeffs = (self.coeffs.mul(Tensor([other]))).mod(Tensor([self.PrimeField.P]))
+      else:
+        new_coeffs = self.coeffs.mul(Tensor([other]))
       return Polynomial(new_coeffs, self.PrimeField)
 
   def __rmul__(self, other):
