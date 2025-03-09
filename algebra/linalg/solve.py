@@ -54,5 +54,6 @@ def matrix_inverse(A: Tensor) -> Tensor:
 
   return A_inv
 
+
 def solve(A: Tensor, b: Tensor) -> Tensor:
   return matrix_inverse(A) @ b

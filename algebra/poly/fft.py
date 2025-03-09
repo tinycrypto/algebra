@@ -76,5 +76,3 @@ def fft(x_real: Tensor, x_imag: Tensor, use_numpy: bool = True) -> tuple[Tensor,
 
 def ifft(x_real: Tensor, x_imag: Tensor, use_numpy: bool = True) -> tuple[Tensor, Tensor]:
   return _fft(x_real, x_imag, inverse=True, use_numpy=use_numpy)
-
-

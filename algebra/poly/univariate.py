@@ -72,12 +72,12 @@ class Polynomial:
     max_len = max(self.coeffs.shape[0], other.coeffs.shape[0])
     self_padded = self.coeffs.pad((0, max_len - self.coeffs.shape[0]), mode="constant", value=0)
     other_padded = other.coeffs.pad((0, max_len - other.coeffs.shape[0]), mode="constant", value=0)
-    
+
     if self.PrimeField is not None:
       new_coeffs = self.PrimeField.add(self_padded, other_padded)
     else:
       new_coeffs = self_padded + other_padded
-      
+
     return Polynomial(new_coeffs, self.PrimeField)
 
   def __sub__(self, other):
@@ -87,12 +87,12 @@ class Polynomial:
     max_len = max(self.coeffs.shape[0], other.coeffs.shape[0])
     self_padded = self.coeffs.pad((0, max_len - self.coeffs.shape[0]), mode="constant", value=0)
     other_padded = other.coeffs.pad((0, max_len - other.coeffs.shape[0]), mode="constant", value=0)
-    
+
     if self.PrimeField is not None:
       new_coeffs = self.PrimeField.sub(self_padded, other_padded)
     else:
       new_coeffs = self_padded - other_padded
-      
+
     return Polynomial(new_coeffs, self.PrimeField)
 
   def __neg__(self):
@@ -103,7 +103,7 @@ class Polynomial:
       new_coeffs = self.PrimeField.neg(self.coeffs)
     else:
       new_coeffs = -self.coeffs
-      
+
     return Polynomial(new_coeffs, self.PrimeField)
 
   def __mul__(self, other: Tensor | int):
@@ -129,7 +129,7 @@ class Polynomial:
 
       products = a_exp * b_exp * mask
       new_coeffs = products.sum(axis=(1, 2))
-      
+
       if self.PrimeField is not None:
         new_coeffs = new_coeffs.mod(Tensor([self.PrimeField.P]))
 
