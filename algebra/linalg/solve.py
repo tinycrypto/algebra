@@ -7,10 +7,11 @@ def lud(A):
   U = Tensor.zeros((n, n), dtype=A.dtype).contiguous()
   for k in range(n):
     U[k, k:] = A[k, k:] - L[k, :k] @ U[:k, k:]
-    if abs(U[k, k].item()) < 1e-10:
-      raise ValueError("Matrix is singular, cannot compute LU decomposition")
     if k < n - 1:
       L[k + 1 :, k] = (A[k + 1 :, k] - L[k + 1 :, :k] @ U[:k, k]) / U[k, k]
+  idx = Tensor.arange(n)
+  if (U[idx, idx].abs() < 1e-10).any().numpy():
+    raise ValueError("Matrix is singular, cannot compute LU decomposition")
   return L, U
 
 
@@ -18,7 +19,8 @@ def itriu(U):
   n = U.shape[0]
   U_inv = Tensor.zeros((n, n), dtype=U.dtype).contiguous()
   I = Tensor.eye(n, dtype=U.dtype)
-  diag = U[Tensor.arange(n), Tensor.arange(n)]
+  idx = Tensor.arange(n)
+  diag = U[idx, idx]
   for i in range(n - 1, -1, -1):
     if i == n - 1:
       U_inv[i] = I[i] / diag[i]
@@ -31,7 +33,8 @@ def itril(L):
   n = L.shape[0]
   L_inv = Tensor.zeros((n, n), dtype=L.dtype).contiguous()
   I = Tensor.eye(n, dtype=L.dtype)
-  diag = L[Tensor.arange(n), Tensor.arange(n)]
+  idx = Tensor.arange(n)
+  diag = L[idx, idx]
   for i in range(n):
     if i == 0:
       L_inv[i] = I[i] / diag[i]
