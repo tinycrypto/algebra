@@ -4,6 +4,7 @@ from algebra.ff.prime_field import PrimeField as PF
 from algebra.poly.ntt import ntt, intt
 import numpy as np
 
+
 class Polynomial:
   PrimeField = None
 
@@ -18,11 +19,11 @@ class Polynomial:
     """Initialize polynomial with coefficients and optional prime field."""
     self.PrimeField = prime_field
     if isinstance(coeffs, list):
-      coeffs = np.trim_zeros(coeffs, 'b')
+      coeffs = np.trim_zeros(coeffs, "b")
       self.coeffs = Tensor(coeffs, dtype=dtypes.int32)
     else:
       coeffs_np = coeffs.numpy()
-      coeffs_np = np.trim_zeros(coeffs_np, 'b')
+      coeffs_np = np.trim_zeros(coeffs_np, "b")
       self.coeffs = Tensor(coeffs_np, dtype=coeffs.dtype)
 
   def degree(self) -> int:
