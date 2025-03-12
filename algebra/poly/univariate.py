@@ -52,14 +52,14 @@ class Polynomial:
     """
     Compute the Number Theoretic Transform of the polynomial.
     """
-    p_ntt = ntt(self.coeffs.cast(dtypes.uint32), self.PrimeField.P, self.PrimeField.w)
+    p_ntt = ntt(self.coeffs.cast(dtypes.uint64), self.PrimeField.P, self.PrimeField.w).cast(self.coeffs.dtype)
     return Polynomial(p_ntt, self.PrimeField)
 
   def intt(self):
     """
     Compute the Inverse Number Theoretic Transform of the polynomial.
     """
-    p_intt = intt(self.coeffs.cast(dtypes.uint32), self.PrimeField.P, self.PrimeField.w)
+    p_intt = intt(self.coeffs.cast(dtypes.uint64), self.PrimeField.P, self.PrimeField.w).cast(self.coeffs.dtype)
     return Polynomial(p_intt, self.PrimeField)
 
   def __evaluate_all(self, xs: Tensor):

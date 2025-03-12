@@ -72,7 +72,7 @@ def test_polynomial_operations_babybear():
   result = p1(Tensor([1, 2, 3])).numpy()
   assert (result == [6, 17, 34]).all()
 
-  p7 = Polynomial([randint(0, 100) for _ in range(10)], M31)
+  p7 = Polynomial([randint(0, 100) for _ in range(8)], M31)
   p7_ntt = p7.ntt()
   p7_intt = p7_ntt.intt()
   assert (p7_intt.coeffs.numpy() == p7.coeffs.numpy()).all()
