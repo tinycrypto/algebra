@@ -2,6 +2,7 @@ from algebra.poly.univariate import Polynomial
 from algebra.ff.m31 import M31
 from algebra.ff.babybear import BabyBear
 from tinygrad import Tensor
+from random import randint
 
 
 def test_polynomial_operations_m31():
@@ -70,3 +71,8 @@ def test_polynomial_operations_babybear():
   # Test evaluate_all
   result = p1(Tensor([1, 2, 3])).numpy()
   assert (result == [6, 17, 34]).all()
+
+  p7 = Polynomial([randint(0, 100) for _ in range(10)], M31)
+  p7_ntt = p7.ntt()
+  p7_intt = p7_ntt.intt()
+  assert (p7_intt.coeffs.numpy() == p7.coeffs.numpy()).all()

@@ -1,7 +1,8 @@
 from tinygrad.tensor import Tensor
 from tinygrad import dtypes
 from algebra.ff.prime_field import PrimeField as PF
-
+from algebra.poly.ntt import ntt, intt
+import numpy as np
 
 class Polynomial:
   PrimeField = None
@@ -14,17 +15,15 @@ class Polynomial:
     """
 
   def __init__(self, coeffs: list[int] | Tensor, prime_field: PF = None):
-    """
-    Initialize the polynomial.
-
-    coeffs: a list of field elements (instances of a PrimeField subclass)
-    prime_field: optional prime field class to use for modular arithmetic
-    """
+    """Initialize polynomial with coefficients and optional prime field."""
     self.PrimeField = prime_field
     if isinstance(coeffs, list):
+      coeffs = np.trim_zeros(coeffs, 'b')
       self.coeffs = Tensor(coeffs, dtype=dtypes.int32)
-    elif isinstance(coeffs, Tensor):
-      self.coeffs = coeffs
+    else:
+      coeffs_np = coeffs.numpy()
+      coeffs_np = np.trim_zeros(coeffs_np, 'b')
+      self.coeffs = Tensor(coeffs_np, dtype=coeffs.dtype)
 
   def degree(self) -> int:
     """
@@ -48,6 +47,20 @@ class Polynomial:
     for coeff in self.coeffs[::-1]:
       result = result * x + coeff
     return result
+
+  def ntt(self):
+    """
+    Compute the Number Theoretic Transform of the polynomial.
+    """
+    p_ntt = ntt(self.coeffs.cast(dtypes.uint32), self.PrimeField.P, self.PrimeField.w)
+    return Polynomial(p_ntt, self.PrimeField)
+
+  def intt(self):
+    """
+    Compute the Inverse Number Theoretic Transform of the polynomial.
+    """
+    p_intt = intt(self.coeffs.cast(dtypes.uint32), self.PrimeField.P, self.PrimeField.w)
+    return Polynomial(p_intt, self.PrimeField)
 
   def __evaluate_all(self, xs: Tensor):
     """
