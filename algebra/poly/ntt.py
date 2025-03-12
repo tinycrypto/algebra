@@ -67,6 +67,7 @@ def _transform(x, prime: int, primitive_root: int, inverse: bool = False) -> Ten
 
   dtype = x.dtype
   n = _next_valid_n(len(x), prime)
+  print(f"n: {n}, prime: {prime}, primitive_root: {primitive_root}")
 
   if len(x) < n:
     padded_np = Tensor.zeros(n, dtype=dtype).contiguous()
@@ -92,21 +93,24 @@ def _transform(x, prime: int, primitive_root: int, inverse: bool = False) -> Ten
 
   # Create transformation matrix
   matrix = Tensor(omega_powers, dtype=dtypes.uint64)[powers]
+  result = (matrix @ (x % prime)) % prime
 
   # For inverse, apply scaling factor (1/n mod prime)
   if inverse:
     n_inv = pow(n, prime - 2, prime)
-    matrix = (matrix * n_inv) % prime
+    result = (result * n_inv) % prime
 
   # Perform the transformation
-  return (matrix @ (x % prime)) % prime
+  return result
 
 
 if __name__ == "__main__":
   from algebra.ff.m31 import M31
+  from random import randint
 
-  n, prime, primitive_root = 8, M31.P, M31.w
-  polynomial = Tensor([1, 2, 3], dtype=dtypes.uint64)
+  n, prime, primitive_root = 10, M31.P, M31.w
+  polynomial = Tensor([randint(0, prime - 1) for _ in range(n)], dtype=dtypes.uint64)
+  print(f'polynomial: {polynomial.numpy()}')
 
   transformed = ntt(polynomial, prime, primitive_root)
   print("NTT result:", transformed.numpy())
