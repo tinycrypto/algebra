@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
   n, prime, primitive_root = 10, M31.P, M31.w
   polynomial = Tensor([randint(0, prime - 1) for _ in range(n)], dtype=dtypes.uint64)
-  print(f'polynomial: {polynomial.numpy()}')
+  print(f"polynomial: {polynomial.numpy()}")
 
   transformed = ntt(polynomial, prime, primitive_root)
   print("NTT result:", transformed.numpy())
