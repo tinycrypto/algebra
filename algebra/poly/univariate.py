@@ -49,12 +49,16 @@ class Polynomial:
       result = result * x + coeff
     return result
 
-  def reduce(self):
+  def reduce(self, modulus = None):
     """
     Reduce the coefficients of the polynomial modulo the prime field.
     """
-    if self.PrimeField is not None:
-      self.coeffs = self.coeffs % self.PrimeField.P
+    if modulus is None:
+      if self.PrimeField is not None:
+        self.coeffs = self.coeffs % self.PrimeField.P
+    else:
+      self.coeffs = self.coeffs % modulus
+    return self
 
   def ntt(self):
     """
