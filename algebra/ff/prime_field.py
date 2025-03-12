@@ -4,6 +4,7 @@ from tinygrad import dtypes
 
 class PrimeField:
   P: int = None
+  w: int = None
 
   def __init__(self, x):
     if isinstance(x, (int, float, list, Tensor)):
