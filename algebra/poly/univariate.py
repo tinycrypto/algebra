@@ -49,6 +49,13 @@ class Polynomial:
       result = result * x + coeff
     return result
 
+  def reduce(self):
+    """
+    Reduce the coefficients of the polynomial modulo the prime field.
+    """
+    if self.PrimeField is not None:
+      self.coeffs = self.coeffs % self.PrimeField.P
+
   def ntt(self):
     """
     Compute the Number Theoretic Transform of the polynomial.
@@ -154,7 +161,7 @@ class Polynomial:
       else:
         new_coeffs = self.coeffs.mul(Tensor([other]))
       return Polynomial(new_coeffs, self.PrimeField)
-
+  
   def __rmul__(self, other):
     return self.__mul__(other)
 
