@@ -2,73 +2,57 @@ from tinygrad.tensor import Tensor
 from tinygrad import dtypes
 
 def ntt_matrix(n, prime, primitive_root):
-    """
-    Generate the NTT matrix for a given size n, prime modulus, and primitive root.
-    
-    Args:
-        n: Size of the transform
-        prime: The prime modulus
-        primitive_root: A primitive n-th root of unity modulo prime
-        
-    Returns:
-        n x n Tensor for the NTT transform
-    """
     # Create omega as the primitive n-th root of unity
     omega = pow(primitive_root, (prime - 1) // n, prime)
     
-    # Generate the NTT matrix using tinygrad Tensor
-    matrix = Tensor.zeros(n, n, dtype=dtypes.uint32).contiguous()
+    # Create row and column indices for broadcasting
+    i = Tensor.arange(n, dtype=dtypes.int32).reshape(n, 1)
+    j = Tensor.arange(n, dtype=dtypes.int32).reshape(1, n)
     
-    # Fill the matrix manually using elementwise operations
-    for i in range(n):
-        for j in range(n):
-            # Compute omega^(i*j) mod prime
-            power = (i * j) % n
-            value = pow(omega, power, prime)
-            # Assign value to matrix position (i,j)
-            # We need to use a temporary tensor and update row by row
-            row = matrix[i].numpy()
-            row[j] = value
-            matrix[i] = Tensor(row, dtype=dtypes.uint32)
+    # Compute powers matrix (i*j) % n using tinygrad operations
+    powers = (i * j) % n
     
-    return matrix
+    # Precompute all powers of omega as a tensor directly
+    omega_values = []
+    current = 1
+    for k in range(n):
+        omega_values.append(current)
+        current = (current * omega) % prime
+    
+    omega_tensor = Tensor(omega_values, dtype=dtypes.int32)
+    
+    # Using advanced indexing with the powers tensor to get omega^(i*j) % prime
+    ntt_matrix = omega_tensor[powers]
+    
+    return ntt_matrix
 
 def intt_matrix(n, prime, primitive_root):
-    """
-    Generate the inverse NTT matrix for a given size n, prime modulus, and primitive root.
-    
-    Args:
-        n: Size of the transform
-        prime: The prime modulus
-        primitive_root: A primitive n-th root of unity modulo prime
-        
-    Returns:
-        n x n Tensor for the inverse NTT transform
-    """
     # Create omega as the primitive n-th root of unity
     omega = pow(primitive_root, (prime - 1) // n, prime)
-    # Compute inverse of omega
     omega_inv = pow(omega, prime - 2, prime)
     
-    # Generate the inverse NTT matrix
-    matrix = Tensor.zeros(n, n, dtype=dtypes.uint32).contiguous()
+    # Create row and column indices for broadcasting
+    i = Tensor.arange(n, dtype=dtypes.int32).reshape(n, 1)
+    j = Tensor.arange(n, dtype=dtypes.int32).reshape(1, n)
     
-    # Fill the matrix manually using elementwise operations
-    for i in range(n):
-        for j in range(n):
-            # Compute omega_inv^(i*j) mod prime
-            power = (i * j) % n
-            value = pow(omega_inv, power, prime)
-            # Assign value to matrix position (i,j)
-            row = matrix[i].numpy()
-            row[j] = value
-            matrix[i] = Tensor(row, dtype=dtypes.uint32)
+    # Compute powers matrix (i*j) % n using tinygrad operations
+    powers = (i * j) % n
     
-    # Multiply by n_inv (modular multiplicative inverse of n)
+    # Precompute all powers of omega as a tensor directly
+    omega_values = []
+    current = 1
+    for k in range(n):
+        omega_values.append(current)
+        current = (current * omega_inv) % prime
+    
+    omega_tensor = Tensor(omega_values, dtype=dtypes.int32)
+    
+    # Using advanced indexing with the powers tensor to get omega^(i*j) % prime
+    ntt_matrix = omega_tensor[powers]
     n_inv = pow(n, prime - 2, prime)
-    matrix = (matrix * n_inv) % prime
-    
-    return matrix
+    ntt_matrix = (ntt_matrix * n_inv) % prime
+
+    return ntt_matrix
 
 def ntt(polynomial, prime, primitive_root):
     """
