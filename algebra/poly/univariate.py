@@ -49,7 +49,7 @@ class Polynomial:
       result = result * x + coeff
     return result
 
-  def reduce(self, modulus = None):
+  def reduce(self, modulus=None):
     """
     Reduce the coefficients of the polynomial modulo the prime field.
     """
@@ -165,7 +165,7 @@ class Polynomial:
       else:
         new_coeffs = self.coeffs.mul(Tensor([other]))
       return Polynomial(new_coeffs, self.PrimeField)
-  
+
   def __rmul__(self, other):
     return self.__mul__(other)
 
