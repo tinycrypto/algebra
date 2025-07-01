@@ -1,6 +1,5 @@
 """Tests for Curve25519 and Ed25519"""
 
-import pytest
 from algebra.ec.curve25519 import Curve25519, Ed25519, Fr
 
 

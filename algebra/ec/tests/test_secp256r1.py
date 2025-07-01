@@ -1,6 +1,5 @@
 """Tests for secp256r1 (P-256) curve"""
 
-import pytest
 from algebra.ec.secp256r1 import Secp256r1, Fr
 
 

@@ -72,9 +72,6 @@ class Ed25519(EllipticCurve):
 
 def test_curve25519():
   """Basic Curve25519 tests"""
-  # Create curve
-  curve = Curve25519()
-
   # Generator
   G = Curve25519.generator()
   assert G.is_on_curve()
@@ -101,9 +98,6 @@ def test_curve25519():
 
 def test_ed25519():
   """Basic Ed25519 tests"""
-  # Create curve
-  curve = Ed25519()
-
   # Generator
   G = Ed25519.generator()
   assert G.is_on_curve()

@@ -33,9 +33,6 @@ class Secp256k1(EllipticCurve):
 
 def test_secp256k1():
   """Basic secp256k1 tests"""
-  # Create curve
-  curve = Secp256k1()
-
   # Generator
   G = Secp256k1.generator()
   assert G.is_on_curve()

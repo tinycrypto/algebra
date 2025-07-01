@@ -1,6 +1,5 @@
 """Tests for BN254 curve"""
 
-import pytest
 from algebra.ec.bn254 import G1 as BN254, Fr
 
 

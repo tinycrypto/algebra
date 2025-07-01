@@ -20,7 +20,7 @@ def test_registry_imports():
 
 def test_curve_imports():
   """Test that we can import all curve classes"""
-  from algebra.ec.secp256k1 import Secp256k1, Fp, Fr
+  from algebra.ec.secp256k1 import Secp256k1
   from algebra.ec.secp256r1 import Secp256r1
   from algebra.ec.curve25519 import Curve25519, Ed25519
   from algebra.ec.secp384r1 import Secp384r1

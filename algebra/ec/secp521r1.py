@@ -35,9 +35,6 @@ class Secp521r1(EllipticCurve):
 
 def test_secp521r1():
   """Basic secp521r1 tests"""
-  # Create curve
-  curve = Secp521r1()
-
   # Generator
   G = Secp521r1.generator()
   assert G.is_on_curve()

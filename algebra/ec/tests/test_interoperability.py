@@ -1,6 +1,5 @@
 """Cross-curve interoperability and consistency tests"""
 
-import pytest
 from algebra.ec.bn254 import G1 as BN254
 from algebra.ec.secp256k1 import Secp256k1
 from algebra.ec.secp256r1 import Secp256r1

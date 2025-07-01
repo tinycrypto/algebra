@@ -1,6 +1,5 @@
 """Tests for secp256k1 curve (Bitcoin/Ethereum)"""
 
-import pytest
 from algebra.ec.secp256k1 import Secp256k1, Fr
 
 

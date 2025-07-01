@@ -23,7 +23,7 @@ def test_ec_point_creation():
 
   # Invalid point should raise error
   try:
-    Q = ECPoint(0, 1, curve)
+    ECPoint(0, 1, curve)
     assert False, "Should have raised error for invalid point"
   except ValueError:
     pass

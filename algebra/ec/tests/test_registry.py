@@ -1,7 +1,6 @@
 """Tests for curve registry"""
 
-import pytest
-from algebra.ec.registry import get_curve, list_curves, CURVES
+from algebra.ec.registry import get_curve, list_curves
 
 
 def test_registry_basic():
@@ -54,7 +53,6 @@ def test_registry_instantiation():
     assert curve_class is not None
 
     # Test that we can create instances
-    curve = curve_class()
     generator = curve_class.generator()
     assert generator.is_on_curve()
 

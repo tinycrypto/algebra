@@ -1,6 +1,5 @@
 """Tests for NIST curves (P-384, P-521)"""
 
-import pytest
 from algebra.ec.secp384r1 import Secp384r1, Fr as Fr384
 from algebra.ec.secp521r1 import Secp521r1, Fr as Fr521
 
