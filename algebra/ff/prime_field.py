@@ -79,7 +79,7 @@ class PrimeField:
   def tobytes(self):
     val = int(self.value.numpy().item()) if self.value.numel() == 1 else int(self.value.numpy()[0])
     result = BigInt(val) % BigInt(self.P)
-    return result.to_int().to_bytes((result.to_int().bit_length() + 7) // 8, 'big')
+    return result.to_int().to_bytes((result.to_int().bit_length() + 7) // 8, "big")
 
   def __eq__(self, other):
     if isinstance(other, int):
@@ -101,13 +101,13 @@ class PrimeField:
       # Vector case - handle broadcasting for scalar-vector operations
       a_np = a.numpy()
       b_np = b.numpy()
-      
+
       # Handle broadcasting: if one is scalar, broadcast to match the other
       if a_np.ndim == 0:  # a is scalar
         a_np = [a_np.item()] * len(b_np)
-      elif b_np.ndim == 0:  # b is scalar  
+      elif b_np.ndim == 0:  # b is scalar
         b_np = [b_np.item()] * len(a_np)
-      
+
       results = []
       for a_val, b_val in zip(a_np, b_np):
         result = (BigInt(int(a_val)) + BigInt(int(b_val))) % BigInt(cls.P)
@@ -162,13 +162,13 @@ class PrimeField:
       # Vector case - handle broadcasting for scalar-vector operations
       a_np = a.numpy()
       b_np = b.numpy()
-      
+
       # Handle broadcasting: if one is scalar, broadcast to match the other
       if a_np.ndim == 0:  # a is scalar
         a_np = [a_np.item()] * len(b_np)
-      elif b_np.ndim == 0:  # b is scalar  
+      elif b_np.ndim == 0:  # b is scalar
         b_np = [b_np.item()] * len(a_np)
-      
+
       results = []
       for a_val, b_val in zip(a_np, b_np):
         result = (BigInt(int(a_val)) * BigInt(int(b_val))) % BigInt(cls.P)
@@ -194,13 +194,13 @@ class PrimeField:
   def tobytes_tensor(cls, x: Tensor) -> bytes:
     val = int(x.numpy().item()) if x.numel() == 1 else int(x.numpy()[0])
     result = BigInt(val) % BigInt(cls.P)
-    return result.to_int().to_bytes((result.to_int().bit_length() + 7) // 8, 'big')
+    return result.to_int().to_bytes((result.to_int().bit_length() + 7) // 8, "big")
 
   @classmethod
   def eq_t(cls, x: Tensor, y: Tensor):
     x_val = int(x.numpy().item()) if x.numel() == 1 else int(x.numpy()[0])
     y_val = int(y.numpy().item()) if y.numel() == 1 else int(y.numpy()[0])
-    
+
     x_mod = BigInt(x_val) % BigInt(cls.P)
     y_mod = BigInt(y_val) % BigInt(cls.P)
     return Tensor([1.0 if x_mod == y_mod else 0.0], dtype=dtypes.float32)
@@ -241,8 +241,9 @@ class PrimeField:
   def modinv_impl(cls, x: Tensor) -> Tensor:
     # Compute the modular inverse using BigInt extended GCD
     x_val = int(x.numpy().item()) if x.numel() == 1 else int(x.numpy()[0])
-    
+
     from algebra.bigint.bigint import mod_inverse
+
     result = mod_inverse(BigInt(x_val), BigInt(cls.P))
     return Tensor([result.to_int()], dtype=x.dtype)
 
@@ -250,6 +251,6 @@ class PrimeField:
   def pow_tensor(cls, base: Tensor, exponent: int) -> Tensor:
     # Use BigInt for exponentiation
     base_val = int(base.numpy().item()) if base.numel() == 1 else int(base.numpy()[0])
-    
+
     result = pow(BigInt(base_val), exponent, BigInt(cls.P))
     return Tensor([result.to_int()], dtype=base.dtype)

@@ -19,7 +19,7 @@ class EllipticCurve:
     """Check if batch of points are on curve"""
     # Use field operations instead of direct modulo
     x3 = self.field.mul_mod(self.field.mul_mod(xs, xs), xs)
-    ax = self.field.mul_mod(self.a.value, xs) 
+    ax = self.field.mul_mod(self.a.value, xs)
     y2 = self.field.mul_mod(ys, ys)
     rhs = self.field.add(self.field.add(x3, ax), self.b.value)
     return self.field.eq_t(y2, rhs)
