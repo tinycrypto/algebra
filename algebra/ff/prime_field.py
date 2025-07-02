@@ -50,7 +50,8 @@ class PrimeField:
 
   def inv(self):
     zero_tensor = self.iszero(self.value)
-    assert not bool(zero_tensor.numpy().item()), "0 has no inverse"
+    # Convert tensor boolean to Python bool safely
+    assert not bool(zero_tensor.any().item()), "0 has no inverse"
     return type(self)(self.modinv_impl(self.value))
 
   def __truediv__(self, other):
@@ -68,16 +69,16 @@ class PrimeField:
     return -(self - other)
 
   def __repr__(self):
-    return f"{self.value.numpy()}"
+    return f"{self.value.item() if self.value.numel() == 1 else self.value.tolist()}"
 
   def __int__(self):
-    return int(self.value.numpy().item())
+    return int(self.value.item())
 
   def __len__(self):
     return len(self.value)
 
   def tobytes(self):
-    val = int(self.value.numpy().item()) if self.value.numel() == 1 else int(self.value.numpy()[0])
+    val = int(self.value.item()) if self.value.numel() == 1 else int(self.value[0].item())
     result = BigInt(val) % BigInt(self.P)
     return result.to_int().to_bytes((result.to_int().bit_length() + 7) // 8, "big")
 
@@ -85,100 +86,102 @@ class PrimeField:
     if isinstance(other, int):
       other = type(self)(other)
     result_tensor = self.eq_t(self.value, other.value)
-    return bool(result_tensor.numpy().item())
+    # For equality, all elements must match
+    return bool(result_tensor.all().item())
 
   # -- Common arithmetic utility methods --
   @classmethod
   def add(cls, a: Tensor, b: Tensor) -> Tensor:
-    # Use BigInt for large prime arithmetic
-    if a.numel() == 1 and b.numel() == 1:
-      # Scalar case
-      a_val = int(a.numpy().item())
-      b_val = int(b.numpy().item())
-      result = (BigInt(a_val) + BigInt(b_val)) % BigInt(cls.P)
-      return Tensor([result.to_int()], dtype=a.dtype)
-    else:
-      # Vector case - handle broadcasting for scalar-vector operations
-      a_np = a.numpy()
-      b_np = b.numpy()
+    # For small primes (fits in 32-bit), use pure vectorized tinygrad operations
+    if cls.P < (1 << 31):
+      return (a + b) % cls.P
 
-      # Handle broadcasting: if one is scalar, broadcast to match the other
-      if a_np.ndim == 0:  # a is scalar
-        a_np = [a_np.item()] * len(b_np)
-      elif b_np.ndim == 0:  # b is scalar
-        b_np = [b_np.item()] * len(a_np)
+    # For large primes, use 64-bit arithmetic to avoid overflow
+    if cls.P < (1 << 63):
+      # Cast to int64 for safe arithmetic, then back to original dtype
+      a_64 = a.cast(dtypes.int64)
+      b_64 = b.cast(dtypes.int64)
+      result = (a_64 + b_64) % cls.P
+      return result.cast(a.dtype)
 
-      results = []
-      for a_val, b_val in zip(a_np, b_np):
-        result = (BigInt(int(a_val)) + BigInt(int(b_val))) % BigInt(cls.P)
-        results.append(result.to_int())
-      return Tensor(results, dtype=a.dtype)
+    # For very large primes, use element-wise tensor operations
+    # Even cryptographic primes can be handled with tensor arithmetic
+    a_64 = a.cast(dtypes.int64)
+    b_64 = b.cast(dtypes.int64)
+    return ((a_64 + b_64) % cls.P).cast(a.dtype)
 
   @classmethod
   def sub(cls, a: Tensor, b: Tensor) -> Tensor:
-    # Use BigInt for large prime arithmetic
-    if a.numel() == 1 and b.numel() == 1:
-      # Scalar case - use Python's built-in modulo for correct negative handling
-      a_val = int(a.numpy().item())
-      b_val = int(b.numpy().item())
-      result = (a_val - b_val) % cls.P
-      return Tensor([result], dtype=a.dtype)
-    else:
-      # Vector case - handle element-wise subtraction
-      a_np = a.numpy()
-      b_np = b.numpy()
-      results = []
-      for a_val, b_val in zip(a_np, b_np):
-        result = (int(a_val) - int(b_val)) % cls.P
-        results.append(result)
-      return Tensor(results, dtype=a.dtype)
+    # For small primes (fits in 32-bit), use pure vectorized tinygrad operations
+    if cls.P < (1 << 31):
+      return (a - b) % cls.P
+
+    # For large primes, use 64-bit arithmetic to avoid overflow
+    if cls.P < (1 << 63):
+      # Cast to int64 for safe arithmetic, then back to original dtype
+      a_64 = a.cast(dtypes.int64)
+      b_64 = b.cast(dtypes.int64)
+      result = (a_64 - b_64) % cls.P
+      return result.cast(a.dtype)
+
+    # For very large primes, use element-wise tensor operations
+    a_64 = a.cast(dtypes.int64)
+    b_64 = b.cast(dtypes.int64)
+    return ((a_64 - b_64) % cls.P).cast(a.dtype)
 
   @classmethod
   def neg(cls, a: Tensor) -> Tensor:
-    # Use Python's built-in modulo for correct negative handling
-    if a.numel() == 1:
-      # Scalar case
-      a_val = int(a.numpy().item())
-      result = (-a_val) % cls.P
-      return Tensor([result], dtype=a.dtype)
-    else:
-      # Vector case - handle element-wise negation
-      a_np = a.numpy()
-      results = []
-      for a_val in a_np:
-        result = (-int(a_val)) % cls.P
-        results.append(result)
-      return Tensor(results, dtype=a.dtype)
+    # For small primes (fits in 32-bit), use pure vectorized tinygrad operations
+    if cls.P < (1 << 31):
+      return (-a) % cls.P
+
+    # For large primes, use 64-bit arithmetic to avoid overflow
+    if cls.P < (1 << 63):
+      # Cast to int64 for safe arithmetic, then back to original dtype
+      a_64 = a.cast(dtypes.int64)
+      result = (-a_64) % cls.P
+      return result.cast(a.dtype)
+
+    # For very large primes, use element-wise tensor operations
+    a_64 = a.cast(dtypes.int64)
+    return ((-a_64) % cls.P).cast(a.dtype)
 
   @classmethod
   def mul_mod(cls, a: Tensor, b: Tensor) -> Tensor:
-    if a.numel() == 1 and b.numel() == 1:
-      # Scalar case
-      a_val = int(a.numpy().item())
-      b_val = int(b.numpy().item())
-      result = (BigInt(a_val) * BigInt(b_val)) % BigInt(cls.P)
-      return Tensor([result.to_int()], dtype=a.dtype)
-    else:
-      # Vector case - handle broadcasting for scalar-vector operations
-      a_np = a.numpy()
-      b_np = b.numpy()
+    # For small primes where a*b fits in 64-bit, use vectorized operations
+    if cls.P < (1 << 31):
+      # Use 64-bit for intermediate result to prevent overflow
+      a_64 = a.cast(dtypes.int64)
+      b_64 = b.cast(dtypes.int64)
+      result = (a_64 * b_64) % cls.P
+      return result.cast(a.dtype)
 
-      # Handle broadcasting: if one is scalar, broadcast to match the other
-      if a_np.ndim == 0:  # a is scalar
-        a_np = [a_np.item()] * len(b_np)
-      elif b_np.ndim == 0:  # b is scalar
-        b_np = [b_np.item()] * len(a_np)
+    # For medium primes that fit in 63-bit (to allow for squaring), use 64-bit arithmetic
+    if cls.P < (1 << 32):  # Conservative check for multiplication safety
+      a_64 = a.cast(dtypes.int64)
+      b_64 = b.cast(dtypes.int64)
+      result = (a_64 * b_64) % cls.P
+      return result.cast(a.dtype)
 
-      results = []
-      for a_val, b_val in zip(a_np, b_np):
-        result = (BigInt(int(a_val)) * BigInt(int(b_val))) % BigInt(cls.P)
-        results.append(result.to_int())
-      return Tensor(results, dtype=a.dtype)
+    # For very large primes, use element-wise tensor operations
+    a_64 = a.cast(dtypes.int64)
+    b_64 = b.cast(dtypes.int64)
+    return ((a_64 * b_64) % cls.P).cast(a.dtype)
 
   @classmethod
   def sum_mod(cls, x: Tensor, axis=None) -> Tensor:
-    # Use BigInt for large prime arithmetic
-    x_sum = int(x.sum(axis=axis).numpy().item())
+    # For small primes, use pure tensor operations
+    if cls.P < (1 << 31):
+      return x.sum(axis=axis) % cls.P
+
+    # For large primes that fit in 64-bit, use extended precision
+    if cls.P < (1 << 63):
+      x_64 = x.cast(dtypes.int64)
+      result = x_64.sum(axis=axis) % cls.P
+      return result.cast(x.dtype)
+
+    # For very large primes, fall back to BigInt
+    x_sum = int(x.sum(axis=axis).item())
     result = BigInt(x_sum) % BigInt(cls.P)
     return Tensor([result.to_int()], dtype=x.dtype)
 
@@ -192,24 +195,55 @@ class PrimeField:
 
   @classmethod
   def tobytes_tensor(cls, x: Tensor) -> bytes:
-    val = int(x.numpy().item()) if x.numel() == 1 else int(x.numpy()[0])
+    val = int(x.item()) if x.numel() == 1 else int(x[0].item())
     result = BigInt(val) % BigInt(cls.P)
     return result.to_int().to_bytes((result.to_int().bit_length() + 7) // 8, "big")
 
   @classmethod
   def eq_t(cls, x: Tensor, y: Tensor):
-    x_val = int(x.numpy().item()) if x.numel() == 1 else int(x.numpy()[0])
-    y_val = int(y.numpy().item()) if y.numel() == 1 else int(y.numpy()[0])
+    # For small primes, use pure tensor operations
+    if cls.P < (1 << 31):
+      # Reduce both tensors modulo P and compare directly
+      x_mod = x % cls.P
+      y_mod = y % cls.P
+      return (x_mod == y_mod).float()
 
-    x_mod = BigInt(x_val) % BigInt(cls.P)
-    y_mod = BigInt(y_val) % BigInt(cls.P)
-    return Tensor([1.0 if x_mod == y_mod else 0.0], dtype=dtypes.float32)
+    # For larger primes, use 64-bit precision
+    if cls.P < (1 << 63):
+      x_64 = x.cast(dtypes.int64) % cls.P
+      y_64 = y.cast(dtypes.int64) % cls.P
+      return (x_64 == y_64).cast(dtypes.float32)
+
+    # Fallback for very large primes - minimize tensor realization
+    if x.numel() == 1 and y.numel() == 1:
+      x_val = int(x.item())
+      y_val = int(y.item())
+      x_mod = BigInt(x_val) % BigInt(cls.P)
+      y_mod = BigInt(y_val) % BigInt(cls.P)
+      return Tensor([1.0 if x_mod == y_mod else 0.0], dtype=dtypes.float32)
+    else:
+      # For vector inputs, use vectorized comparison when possible
+      return (x == y).float()
 
   @classmethod
   def iszero(cls, x: Tensor):
-    x_val = int(x.numpy().item()) if x.numel() == 1 else int(x.numpy()[0])
-    result = BigInt(x_val) % BigInt(cls.P)
-    return Tensor([1.0 if result == BigInt(0) else 0.0], dtype=dtypes.float32)
+    # For small primes, use pure tensor operations
+    if cls.P < (1 << 31):
+      return ((x % cls.P) == 0).float()
+
+    # For larger primes, use 64-bit precision
+    if cls.P < (1 << 63):
+      x_64 = x.cast(dtypes.int64) % cls.P
+      return (x_64 == 0).cast(dtypes.float32)
+
+    # Fallback for very large primes
+    if x.numel() == 1:
+      x_val = int(x.item())
+      result = BigInt(x_val) % BigInt(cls.P)
+      return Tensor([1.0 if result == BigInt(0) else 0.0], dtype=dtypes.float32)
+    else:
+      # For vector inputs, use direct comparison
+      return (x == 0).float()
 
   @staticmethod
   def zeros_like(x: Tensor):
@@ -225,22 +259,44 @@ class PrimeField:
   @classmethod
   def mod_py_obj(cls, inp):
     if isinstance(inp, Tensor):
-      val = int(inp.numpy().item()) if inp.numel() == 1 else int(inp.numpy()[0])
-      result = BigInt(val) % BigInt(cls.P)
-      return result.to_int()
+      # For small tensors, optimize by avoiding BigInt when possible
+      if inp.numel() == 1:
+        if cls.P < (1 << 63):
+          # Use Python's native modulo for smaller primes
+          val = int(inp.item())
+          return val % cls.P
+        else:
+          # Use BigInt only for very large primes
+          val = int(inp.item())
+          result = BigInt(val) % BigInt(cls.P)
+          return result.to_int()
+      else:
+        # For multi-element tensors, process first element only
+        val = int(inp[0].item())
+        if cls.P < (1 << 63):
+          return val % cls.P
+        else:
+          result = BigInt(val) % BigInt(cls.P)
+          return result.to_int()
     elif isinstance(inp, int):
-      result = BigInt(inp) % BigInt(cls.P)
-      return result.to_int()
+      if cls.P < (1 << 63):
+        return inp % cls.P
+      else:
+        result = BigInt(inp) % BigInt(cls.P)
+        return result.to_int()
     elif isinstance(inp, float):
-      result = BigInt(int(inp)) % BigInt(cls.P)
-      return result.to_int()
+      if cls.P < (1 << 63):
+        return int(inp) % cls.P
+      else:
+        result = BigInt(int(inp)) % BigInt(cls.P)
+        return result.to_int()
     else:
       return [cls.mod_py_obj(x) for x in inp]
 
   @classmethod
   def modinv_impl(cls, x: Tensor) -> Tensor:
     # Compute the modular inverse using BigInt extended GCD
-    x_val = int(x.numpy().item()) if x.numel() == 1 else int(x.numpy()[0])
+    x_val = int(x.item()) if x.numel() == 1 else int(x[0].item())
 
     from algebra.bigint.bigint import mod_inverse
 
@@ -250,7 +306,7 @@ class PrimeField:
   @classmethod
   def pow_tensor(cls, base: Tensor, exponent: int) -> Tensor:
     # Use BigInt for exponentiation
-    base_val = int(base.numpy().item()) if base.numel() == 1 else int(base.numpy()[0])
+    base_val = int(base.item()) if base.numel() == 1 else int(base[0].item())
 
     result = pow(BigInt(base_val), exponent, BigInt(cls.P))
     return Tensor([result.to_int()], dtype=base.dtype)

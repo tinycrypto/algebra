@@ -92,53 +92,47 @@ class BigIntPrimeField:
   # Batch operation methods for tensor operations
   @classmethod
   def add(cls, a: Tensor, b: Tensor) -> Tensor:
-    """Add two tensors with modular reduction"""
-    a_vals = a.numpy().flatten()
-    b_vals = b.numpy().flatten()
-
-    results = []
-    for a_val, b_val in zip(a_vals, b_vals):
-      result = (int(a_val) + int(b_val)) % cls.P
-      results.append(result)
-
-    return Tensor(results, dtype=a.dtype).reshape(a.shape)
+    """Add two tensors with modular reduction using element-wise operations"""
+    # Use pure element-wise tensor operations - no manual iteration!
+    # Cast to int64 for safe arithmetic if needed
+    if cls.P < (1 << 63):
+      a_64 = a.cast(dtypes.int64)
+      b_64 = b.cast(dtypes.int64)
+      return ((a_64 + b_64) % cls.P).cast(a.dtype)
+    else:
+      # For very large primes, still use element-wise operations
+      # Python's modulo works element-wise on tensors
+      return (a + b) % cls.P
 
   @classmethod
   def sub(cls, a: Tensor, b: Tensor) -> Tensor:
-    """Subtract two tensors with modular reduction"""
-    a_vals = a.numpy().flatten()
-    b_vals = b.numpy().flatten()
-
-    results = []
-    for a_val, b_val in zip(a_vals, b_vals):
-      result = (int(a_val) - int(b_val)) % cls.P
-      results.append(result)
-
-    return Tensor(results, dtype=a.dtype).reshape(a.shape)
+    """Subtract two tensors with modular reduction using element-wise operations"""
+    # Use pure element-wise tensor operations - no manual iteration!
+    if cls.P < (1 << 63):
+      a_64 = a.cast(dtypes.int64)
+      b_64 = b.cast(dtypes.int64)
+      return ((a_64 - b_64) % cls.P).cast(a.dtype)
+    else:
+      # For very large primes, use element-wise operations
+      return (a - b) % cls.P
 
   @classmethod
   def mul_mod(cls, a: Tensor, b: Tensor) -> Tensor:
-    """Multiply two tensors with modular reduction"""
-    a_vals = a.numpy().flatten()
-    b_vals = b.numpy().flatten()
-
-    results = []
-    for a_val, b_val in zip(a_vals, b_vals):
-      result = (int(a_val) * int(b_val)) % cls.P
-      results.append(result)
-
-    return Tensor(results, dtype=a.dtype).reshape(a.shape)
+    """Multiply two tensors with modular reduction using element-wise operations"""
+    # Use pure element-wise tensor operations - no manual iteration!
+    if cls.P < (1 << 31):
+      # For smaller primes, use 64-bit intermediate to prevent overflow
+      a_64 = a.cast(dtypes.int64)
+      b_64 = b.cast(dtypes.int64)
+      return ((a_64 * b_64) % cls.P).cast(a.dtype)
+    else:
+      # For larger primes, use element-wise operations directly
+      return (a * b) % cls.P
 
   @classmethod
   def eq_t(cls, x: Tensor, y: Tensor) -> Tensor:
-    """Compare two tensors element-wise"""
-    x_vals = x.numpy().flatten()
-    y_vals = y.numpy().flatten()
-
-    results = []
-    for x_val, y_val in zip(x_vals, y_vals):
-      x_mod = int(x_val) % cls.P
-      y_mod = int(y_val) % cls.P
-      results.append(1.0 if x_mod == y_mod else 0.0)
-
-    return Tensor(results, dtype=dtypes.bool).reshape(x.shape)
+    """Compare two tensors element-wise using pure tensor operations"""
+    # Use element-wise tensor comparison - no manual iteration!
+    x_mod = x % cls.P
+    y_mod = y % cls.P
+    return (x_mod == y_mod).float()
