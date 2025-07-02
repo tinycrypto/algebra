@@ -1,16 +1,16 @@
 """BN254 curve implementation for ZK proofs"""
 
 from algebra.ec.curve import EllipticCurve, ECPoint
-from algebra.ff.prime_field import PrimeField
+from algebra.ff.bigint_field import BigIntPrimeField
 
 
-class Fq(PrimeField):
+class Fq(BigIntPrimeField):
   """BN254 base field"""
 
   P = 21888242871839275222246405745257275088696311157297823662689037894645226208583
 
 
-class Fr(PrimeField):
+class Fr(BigIntPrimeField):
   """BN254 scalar field"""
 
   P = 21888242871839275222246405745257275088548364400416034343698204186575808495617

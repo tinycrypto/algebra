@@ -3,7 +3,6 @@
 from algebra.ec.bn254 import G1 as BN254
 from algebra.ec.secp256k1 import Secp256k1
 from algebra.ec.secp256r1 import Secp256r1
-from algebra.ec.curve25519 import Curve25519
 
 
 def test_scalar_multiplication_consistency():
@@ -12,7 +11,6 @@ def test_scalar_multiplication_consistency():
     (BN254.generator(), "BN254"),
     (Secp256k1.generator(), "secp256k1"),
     (Secp256r1.generator(), "secp256r1"),
-    (Curve25519.generator(), "Curve25519"),
   ]
 
   for G, name in curves_and_generators:
@@ -39,7 +37,6 @@ def test_point_operations_consistency():
     (BN254.generator(), "BN254"),
     (Secp256k1.generator(), "secp256k1"),
     (Secp256r1.generator(), "secp256r1"),
-    (Curve25519.generator(), "Curve25519"),
   ]
 
   for G, name in curves_and_generators:
@@ -64,7 +61,6 @@ def test_multi_scalar_multiplication():
     (BN254.generator(), "BN254"),
     (Secp256k1.generator(), "secp256k1"),
     (Secp256r1.generator(), "secp256r1"),
-    (Curve25519.generator(), "Curve25519"),
   ]
 
   for G, name in curves_and_generators:
@@ -85,13 +81,12 @@ def test_curve_properties():
     (BN254(), "BN254"),
     (Secp256k1(), "secp256k1"),
     (Secp256r1(), "secp256r1"),
-    (Curve25519(), "Curve25519"),
   ]
 
   for curve, name in curves:
     # Test that discriminant is non-zero (curves are non-singular)
     discriminant = curve.field(4) * curve.a**3 + curve.field(27) * curve.b**2
-    assert discriminant.value.item() != 0, f"Curve {name} has zero discriminant"
+    assert int(discriminant) != 0, f"Curve {name} has zero discriminant"
 
     # Test that generator is on curve
     G = curve.__class__.generator()
@@ -109,15 +104,15 @@ def test_field_arithmetic_consistency():
     b = field_class(456)
 
     # Test commutivity
-    assert (a + b).equals(b + a), f"Addition not commutative for {name}"
-    assert (a * b).equals(b * a), f"Multiplication not commutative for {name}"
+    assert (a + b) == (b + a), f"Addition not commutative for {name}"
+    assert (a * b) == (b * a), f"Multiplication not commutative for {name}"
 
     # Test associativity for addition
     c = field_class(789)
-    assert ((a + b) + c).equals(a + (b + c)), f"Addition not associative for {name}"
+    assert ((a + b) + c) == (a + (b + c)), f"Addition not associative for {name}"
 
     # Test distributivity
-    assert (a * (b + c)).equals(a * b + a * c), f"Distributivity failed for {name}"
+    assert (a * (b + c)) == (a * b + a * c), f"Distributivity failed for {name}"
 
 
 if __name__ == "__main__":

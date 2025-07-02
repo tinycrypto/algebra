@@ -1,34 +1,34 @@
 from tinygrad import Tensor
-from algebra.ff.prime_field import PrimeField
+from algebra.ff.bigint_field import BigIntPrimeField
 
 
 class EllipticCurve:
   """Elliptic curve in Weierstrass form: y^2 = x^3 + ax + b"""
 
-  def __init__(self, a: int, b: int, field: type[PrimeField]):
+  def __init__(self, a: int, b: int, field: type[BigIntPrimeField]):
     self.a = field(a)
     self.b = field(b)
     self.field = field
 
     # Check discriminant: -16(4a^3 + 27b^2) != 0
     discriminant = field(4) * self.a**3 + field(27) * self.b**2
-    if discriminant.value.item() == 0:
+    if int(discriminant) == 0:
       raise ValueError("Invalid curve: discriminant is zero")
 
   def batch_is_on_curve(self, xs: Tensor, ys: Tensor) -> Tensor:
     """Check if batch of points are on curve"""
-    # y^2 = x^3 + ax + b
-    x3 = (xs * xs * xs) % self.field.P
-    ax = (self.a.value * xs) % self.field.P
-    y2 = (ys * ys) % self.field.P
-    rhs = (x3 + ax + self.b.value) % self.field.P
-    return y2 == rhs
+    # Use field operations instead of direct modulo
+    x3 = self.field.mul_mod(self.field.mul_mod(xs, xs), xs)
+    ax = self.field.mul_mod(self.a.value, xs) 
+    y2 = self.field.mul_mod(ys, ys)
+    rhs = self.field.add(self.field.add(x3, ax), self.b.value)
+    return self.field.eq_t(y2, rhs)
 
 
 class ECPoint:
   """Point on an elliptic curve"""
 
-  def __init__(self, x: int | PrimeField | None, y: int | PrimeField | None, curve: EllipticCurve):
+  def __init__(self, x: int | BigIntPrimeField | None, y: int | BigIntPrimeField | None, curve: EllipticCurve):
     self.curve = curve
     self.field = curve.field
 
@@ -42,7 +42,7 @@ class ECPoint:
 
       # Verify point is on curve
       if not self._verify_on_curve():
-        raise ValueError(f"Point ({x}, {y}) is not on curve")
+        raise ValueError(f"Point ({int(self.x)}, {int(self.y)}) is not on curve")
 
   @classmethod
   def infinity(cls, curve: EllipticCurve) -> "ECPoint":
@@ -118,7 +118,7 @@ class ECPoint:
       return self
 
     # If y = 0, then 2P = O
-    if self.y.value.item() == 0:
+    if int(self.y) == 0:
       return ECPoint.infinity(self.curve)
 
     # slope = (3x^2 + a) / (2y)

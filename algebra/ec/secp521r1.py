@@ -1,16 +1,16 @@
 """secp521r1 (P-521) curve implementation (NIST standard curve)"""
 
 from algebra.ec.curve import EllipticCurve, ECPoint
-from algebra.ff.prime_field import PrimeField
+from algebra.ff.bigint_field import BigIntPrimeField
 
 
-class Fp(PrimeField):
+class Fp(BigIntPrimeField):
   """secp521r1 base field"""
 
   P = 0x01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
 
-class Fr(PrimeField):
+class Fr(BigIntPrimeField):
   """secp521r1 scalar field"""
 
   P = 0x01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409

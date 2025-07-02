@@ -9,7 +9,6 @@ This directory contains comprehensive tests for all elliptic curve implementatio
 - **`test_bn254.py`** - Tests for BN254 pairing-friendly curve
 - **`test_secp256k1.py`** - Tests for secp256k1 (Bitcoin/Ethereum curve)  
 - **`test_secp256r1.py`** - Tests for secp256r1 (NIST P-256 curve)
-- **`test_curve25519.py`** - Tests for Curve25519 and Ed25519
 - **`test_nist_curves.py`** - Tests for P-384 and P-521 curves
 - **`test_interoperability.py`** - Cross-curve consistency tests
 

@@ -27,8 +27,8 @@ def test_secp256k1_known_values():
   expected_2G_y = 0x1AE168FEA63DC339A3C58419466CEAEEF7F632653266D0E1236431A950CFE52A
 
   actual_2G = G.double()
-  assert actual_2G.x.value.item() == expected_2G_x
-  assert actual_2G.y.value.item() == expected_2G_y
+  assert int(actual_2G.x) == expected_2G_x
+  assert int(actual_2G.y) == expected_2G_y
 
 
 def test_secp256k1_order():

@@ -1,16 +1,16 @@
 """secp256k1 curve implementation (Bitcoin/Ethereum curve)"""
 
 from algebra.ec.curve import EllipticCurve, ECPoint
-from algebra.ff.prime_field import PrimeField
+from algebra.ff.bigint_field import BigIntPrimeField
 
 
-class Fp(PrimeField):
+class Fp(BigIntPrimeField):
   """secp256k1 base field"""
 
   P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 
 
-class Fr(PrimeField):
+class Fr(BigIntPrimeField):
   """secp256k1 scalar field"""
 
   P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
@@ -58,8 +58,8 @@ def test_secp256k1():
   expected_2G_y = 0x1AE168FEA63DC339A3C58419466CEAEEF7F632653266D0E1236431A950CFE52A
 
   actual_2G = G.double()
-  assert actual_2G.x.value.item() == expected_2G_x
-  assert actual_2G.y.value.item() == expected_2G_y
+  assert int(actual_2G.x) == expected_2G_x
+  assert int(actual_2G.y) == expected_2G_y
 
   print("secp256k1 tests passed!")
 

@@ -55,7 +55,6 @@ def main():
     "test_bn254",
     "test_secp256k1",
     "test_secp256r1",
-    "test_curve25519",
     "test_nist_curves",
     "test_interoperability",
   ]

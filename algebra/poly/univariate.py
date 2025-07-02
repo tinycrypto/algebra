@@ -241,7 +241,7 @@ class Polynomial:
       lead_coeff_tensor = a.coeffs[-1:]
       # Create inverse using field operations
       lead_inv = self.PrimeField(lead_coeff_tensor.item()).inv()
-      a = a * lead_inv.value.item()
+      a = a * int(lead_inv)
 
     return a
 
@@ -314,7 +314,7 @@ class Polynomial:
 
     # Compute modular inverse of leading coefficient
     if self.PrimeField is not None:
-      divisor_lead_inv = self.PrimeField(int(divisor_lead)).inv().value.item()
+      divisor_lead_inv = int(self.PrimeField(int(divisor_lead)).inv())
     else:
       divisor_lead_inv = 1 / divisor_lead
 

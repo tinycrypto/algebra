@@ -1,16 +1,16 @@
 """secp384r1 (P-384) curve implementation (NIST standard curve)"""
 
 from algebra.ec.curve import EllipticCurve, ECPoint
-from algebra.ff.prime_field import PrimeField
+from algebra.ff.bigint_field import BigIntPrimeField
 
 
-class Fp(PrimeField):
+class Fp(BigIntPrimeField):
   """secp384r1 base field"""
 
   P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFF0000000000000000FFFFFFFF
 
 
-class Fr(PrimeField):
+class Fr(BigIntPrimeField):
   """secp384r1 scalar field"""
 
   P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF581A0DB248B0A77AECEC196ACCC52973

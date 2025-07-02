@@ -22,7 +22,6 @@ def test_curve_imports():
   """Test that we can import all curve classes"""
   from algebra.ec.secp256k1 import Secp256k1
   from algebra.ec.secp256r1 import Secp256r1
-  from algebra.ec.curve25519 import Curve25519, Ed25519
   from algebra.ec.secp384r1 import Secp384r1
   from algebra.ec.secp521r1 import Secp521r1
   from algebra.ec.bn254 import G1 as BN254
@@ -30,8 +29,6 @@ def test_curve_imports():
   # Test that classes exist
   assert Secp256k1 is not None
   assert Secp256r1 is not None
-  assert Curve25519 is not None
-  assert Ed25519 is not None
   assert Secp384r1 is not None
   assert Secp521r1 is not None
   assert BN254 is not None

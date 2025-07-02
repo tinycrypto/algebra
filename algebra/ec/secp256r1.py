@@ -1,16 +1,16 @@
 """secp256r1 (P-256) curve implementation (NIST standard curve)"""
 
 from algebra.ec.curve import EllipticCurve, ECPoint
-from algebra.ff.prime_field import PrimeField
+from algebra.ff.bigint_field import BigIntPrimeField
 
 
-class Fp(PrimeField):
+class Fp(BigIntPrimeField):
   """secp256r1 base field"""
 
   P = 0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF
 
 
-class Fr(PrimeField):
+class Fr(BigIntPrimeField):
   """secp256r1 scalar field"""
 
   P = 0xFFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551
@@ -59,8 +59,8 @@ def test_secp256r1():
   expected_2G_y = 0x07775510DB8ED040293D9AC69F7430DBBA7DADE63CE982299E04B79D227873D1
 
   actual_2G = G.double()
-  assert actual_2G.x.value.item() == expected_2G_x
-  assert actual_2G.y.value.item() == expected_2G_y
+  assert int(actual_2G.x) == expected_2G_x
+  assert int(actual_2G.y) == expected_2G_y
 
   print("secp256r1 tests passed!")
 

@@ -32,7 +32,9 @@ def test_secp384r1_properties():
   curve = Secp384r1()
 
   # Verify curve parameters
-  assert curve.a.value.item() == -3
+  # -3 in the field is represented as p - 3
+  expected_a = curve.field.P - 3
+  assert int(curve.a) == expected_a
 
   # Test larger scalar multiplication
   G = Secp384r1.generator()
@@ -68,7 +70,9 @@ def test_secp521r1_properties():
   curve = Secp521r1()
 
   # Verify curve parameters
-  assert curve.a.value.item() == -3
+  # -3 in the field is represented as p - 3
+  expected_a = curve.field.P - 3
+  assert int(curve.a) == expected_a
 
   # Test larger scalar multiplication
   G = Secp521r1.generator()

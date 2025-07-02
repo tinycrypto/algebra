@@ -27,8 +27,8 @@ def test_secp256r1_known_values():
   expected_2G_y = 0x07775510DB8ED040293D9AC69F7430DBBA7DADE63CE982299E04B79D227873D1
 
   actual_2G = G.double()
-  assert actual_2G.x.value.item() == expected_2G_x
-  assert actual_2G.y.value.item() == expected_2G_y
+  assert int(actual_2G.x) == expected_2G_x
+  assert int(actual_2G.y) == expected_2G_y
 
 
 def test_secp256r1_order():
@@ -44,9 +44,11 @@ def test_secp256r1_nist_compliance():
   curve = Secp256r1()
 
   # Verify curve parameters
-  assert curve.a.value.item() == -3
+  # -3 in the field is represented as p - 3
+  expected_a = curve.field.P - 3
+  assert int(curve.a) == expected_a
   expected_b = 0x5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B
-  assert curve.b.value.item() == expected_b
+  assert int(curve.b) == expected_b
 
   # Verify field prime
   expected_p = 0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF
