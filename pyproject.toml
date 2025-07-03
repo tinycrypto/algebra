@@ -1,10 +1,13 @@
 [project]
 name = "algebra"
-version = "0.1.0"
+version = "0.1.1"
 description = "tinygrad based algebra"
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "Pia", email = "gayeongparkk@gmail.com" }]
+authors = [
+    { name = "Pia", email = "gayeongparkk@gmail.com" },
+    { name = "Bhargav", email = "bannem@caltech.edu" },
+]
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=2.2.3",
@@ -21,7 +24,7 @@ exclude = ["**/.data", "lib"]
 docstring-code-format = true
 
 [tool.uv.workspace]
-members = ["ec", "ff", "poly"]
+members = ["ec", "ff", "poly", "linalg", "bigint"]
 
 [dependency-groups]
 dev = ["pytest>=8.3.4", "ruff>=0.9.7"]
