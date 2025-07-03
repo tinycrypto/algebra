@@ -3,16 +3,16 @@ from tinygrad import dtypes
 import numpy as np
 
 
-def _next_valid_n(l, p):
+def _next_valid_n(length, p):
   """Find next n >= l that divides p-1 efficiently"""
   p_minus_1 = p - 1
-  for n in range(l, min(p, 2 * l)):
+  for n in range(length, min(p, 2 * length)):
     if p_minus_1 % n == 0:
       return n
 
-  bit_length = l.bit_length()
+  bit_length = length.bit_length()
   power_of_two = 1 << bit_length
-  if power_of_two < l:
+  if power_of_two < length:
     power_of_two = power_of_two << 1
 
   while power_of_two < p:
@@ -20,10 +20,10 @@ def _next_valid_n(l, p):
       return power_of_two
     power_of_two = power_of_two << 1
 
-  for divisor in range(l, int(p_minus_1**0.5) + 1):
+  for divisor in range(length, int(p_minus_1**0.5) + 1):
     if p_minus_1 % divisor == 0:
       quotient = p_minus_1 // divisor
-      if quotient >= l:
+      if quotient >= length:
         return quotient
       return divisor
 

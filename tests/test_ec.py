@@ -14,8 +14,8 @@ def test_ec_point_creation():
   curve = EllipticCurve(2, 2, Fp)
 
   # Point at infinity
-  O = ECPoint.infinity(curve)
-  assert O.is_infinity()
+  inf_point = ECPoint.infinity(curve)
+  assert inf_point.is_infinity()
 
   # Valid point (5, 6) on curve
   P = ECPoint(5, 6, curve)
@@ -34,9 +34,9 @@ def test_ec_point_addition():
 
   # P + O = P (identity)
   P = ECPoint(5, 6, curve)
-  O = ECPoint.infinity(curve)
-  assert (P + O).equals(P)
-  assert (O + P).equals(P)
+  inf_point = ECPoint.infinity(curve)
+  assert (P + inf_point).equals(P)
+  assert (inf_point + P).equals(P)
 
   # P + (-P) = O
   neg_P = -P

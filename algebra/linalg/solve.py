@@ -18,28 +18,28 @@ def lud(A):
 def itriu(U):
   n = U.shape[0]
   U_inv = Tensor.zeros((n, n), dtype=U.dtype).contiguous()
-  I = Tensor.eye(n, dtype=U.dtype)
+  identity = Tensor.eye(n, dtype=U.dtype)
   idx = Tensor.arange(n)
   diag = U[idx, idx]
   for i in range(n - 1, -1, -1):
     if i == n - 1:
-      U_inv[i] = I[i] / diag[i]
+      U_inv[i] = identity[i] / diag[i]
     else:
-      U_inv[i] = (I[i] - U[i, i + 1 :] @ U_inv[i + 1 :]) / diag[i]
+      U_inv[i] = (identity[i] - U[i, i + 1 :] @ U_inv[i + 1 :]) / diag[i]
   return U_inv
 
 
 def itril(L):
   n = L.shape[0]
   L_inv = Tensor.zeros((n, n), dtype=L.dtype).contiguous()
-  I = Tensor.eye(n, dtype=L.dtype)
+  identity = Tensor.eye(n, dtype=L.dtype)
   idx = Tensor.arange(n)
   diag = L[idx, idx]
   for i in range(n):
     if i == 0:
-      L_inv[i] = I[i] / diag[i]
+      L_inv[i] = identity[i] / diag[i]
     else:
-      L_inv[i] = (I[i] - L[i, :i] @ L_inv[:i]) / diag[i]
+      L_inv[i] = (identity[i] - L[i, :i] @ L_inv[:i]) / diag[i]
   return L_inv
 
 

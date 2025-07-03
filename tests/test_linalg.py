@@ -28,22 +28,22 @@ def test_lud_singular():
 def test_itriu():
   U = Tensor([[2.0, 3.0], [0.0, 5.0]])
   U_inv = itriu(U)
-  I = U @ U_inv
-  assert np.allclose(I.numpy(), np.eye(2), rtol=1e-5)
+  identity = U @ U_inv
+  assert np.allclose(identity.numpy(), np.eye(2), rtol=1e-5)
 
 
 def test_itril():
   L = Tensor([[1.0, 0.0], [2.0, 1.0]])
   L_inv = itril(L)
-  I = L @ L_inv
-  assert np.allclose(I.numpy(), np.eye(2), rtol=1e-5)
+  identity = L @ L_inv
+  assert np.allclose(identity.numpy(), np.eye(2), rtol=1e-5)
 
 
 def test_matrix_inverse():
   A = Tensor([[4.0, 7.0], [2.0, 6.0]])
   A_inv = matrix_inverse(A)
-  I = A @ A_inv
-  assert np.allclose(I.numpy(), np.eye(2), rtol=1e-5)
+  identity = A @ A_inv
+  assert np.allclose(identity.numpy(), np.eye(2), rtol=1e-5)
 
   expected_inv = np.array([[0.6, -0.7], [-0.2, 0.4]])
   assert np.allclose(A_inv.numpy(), expected_inv, rtol=1e-5)
@@ -52,8 +52,8 @@ def test_matrix_inverse():
 def test_matrix_inverse_3x3():
   A = Tensor([[1.0, 2.0, 3.0], [0.0, 1.0, 4.0], [5.0, 6.0, 0.0]])
   A_inv = matrix_inverse(A)
-  I = A @ A_inv
-  assert np.allclose(I.numpy(), np.eye(3), rtol=1e-5)
+  identity = A @ A_inv
+  assert np.allclose(identity.numpy(), np.eye(3), rtol=1e-5)
 
 
 def test_matrix_inverse_singular():

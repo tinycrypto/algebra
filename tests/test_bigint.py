@@ -149,8 +149,8 @@ def test_gcd_lcm():
   assert g.to_int() == 6
 
   # LCM
-  l = lcm(a, b)
-  assert l.to_int() == 144
+  lcm_result = lcm(a, b)
+  assert lcm_result.to_int() == 144
 
   # GCD with larger numbers
   c = BigInt(12345678)

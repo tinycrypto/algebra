@@ -2,6 +2,7 @@
 
 import pytest
 from algebra.ff.m31 import M31
+from algebra.ff.babybear import BabyBear
 
 
 def test_basic_ops_m31():
@@ -119,8 +120,6 @@ def test_pow_modulus_m31():
 
 
 # BabyBear test
-
-from algebra.ff.babybear import BabyBear
 
 
 def test_basic_ops_babybear():
