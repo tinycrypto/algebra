@@ -1,23 +1,16 @@
-class GF2:
+from algebra.ff.prime_field import PrimeField
+
+class GF2(PrimeField):
+    P = 2
+    
     def __init__(self, x):
-        self.value = int(x) & 1
+        self.value = self.t32(int(x) & 1)
     
     def __add__(self, other):
-        return GF2(self.value ^ other.value)
+        return GF2(self.value.item() ^ GF2(other).value.item())
     
     def __mul__(self, other):
-        return GF2(self.value & other.value)
-    
-    def __repr__(self):
-        return str(self.value)
-    
-    def __int__(self):
-        return self.value
-    
-    def __eq__(self, other):
-        if isinstance(other, GF2):
-            return self.value == other.value
-        return self.value == (int(other) & 1)
+        return GF2(self.value.item() & GF2(other).value.item())
     
     __radd__ = __add__
     __rmul__ = __mul__

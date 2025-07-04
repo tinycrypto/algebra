@@ -1,11 +1,12 @@
 """BigInt-based prime field implementation that avoids tinygrad tensor operations with large constants"""
 
 from algebra.bigint.bigint import BigInt
+from algebra.ff.prime_field import PrimeField
 from tinygrad.tensor import Tensor
 from tinygrad import dtypes
 
 
-class BigIntPrimeField:
+class BigIntPrimeField(PrimeField):
   """Prime field implementation using BigInt for all arithmetic"""
 
   P: int = None
